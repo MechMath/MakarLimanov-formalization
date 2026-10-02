@@ -1,0 +1,13 @@
+lake build: exit 0, 3479 jobs (existing style warnings only)
+lake env lean FullAxiomAudit.lean: exit 0
+AXIOM_AUDIT_OK: 1416 declarations; only standard axioms
+lake env lean VerifyConditional.lean: exit 0
+CONDITIONAL_AUDIT_OK: 1450 declarations; no sorryAx; exactly two custom axioms
+lake env lean MainAxiomAudit.lean: exit 0
+'MakarLimanov.makarLimanov' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound,
+ MakarLimanov.AuditedAssumptions.finite_newton_approximation,
+ MakarLimanov.AuditedAssumptions.symbol_realization]
+lake env lean VerifyComplete.lean: exit 1 (expected strict-gate failure)
+VerifyComplete.lean:8:0: error: Original theorem is incomplete: unapproved axiom MakarLimanov.AuditedAssumptions.finite_newton_approximation

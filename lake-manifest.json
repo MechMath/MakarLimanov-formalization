@@ -1,0 +1,89 @@
+{
+  "version": "1.2.0",
+  "packagesDir": ".lake/packages",
+  "packages": [
+    {
+      "type": "path",
+      "name": "plausible",
+      "scope": "leanprover-community",
+      "inherited": true,
+      "dir": "/Users/tsuki/Desktop/SunMatrix/.lake/packages/plausible",
+      "configFile": "lakefile.toml",
+      "manifestFile": "lake-manifest.json"
+    },
+    {
+      "type": "path",
+      "name": "LeanSearchClient",
+      "scope": "leanprover-community",
+      "inherited": true,
+      "dir": "/Users/tsuki/Desktop/SunMatrix/.lake/packages/LeanSearchClient",
+      "configFile": "lakefile.toml",
+      "manifestFile": "lake-manifest.json"
+    },
+    {
+      "type": "path",
+      "name": "importGraph",
+      "scope": "leanprover-community",
+      "inherited": true,
+      "dir": "/Users/tsuki/Desktop/SunMatrix/.lake/packages/importGraph",
+      "configFile": "lakefile.toml",
+      "manifestFile": "lake-manifest.json"
+    },
+    {
+      "type": "path",
+      "name": "proofwidgets",
+      "scope": "leanprover-community",
+      "inherited": true,
+      "dir": "/Users/tsuki/Desktop/SunMatrix/.lake/packages/proofwidgets",
+      "configFile": "lakefile.lean",
+      "manifestFile": "lake-manifest.json"
+    },
+    {
+      "type": "path",
+      "name": "aesop",
+      "scope": "leanprover-community",
+      "inherited": true,
+      "dir": "/Users/tsuki/Desktop/SunMatrix/.lake/packages/aesop",
+      "configFile": "lakefile.toml",
+      "manifestFile": "lake-manifest.json"
+    },
+    {
+      "type": "path",
+      "name": "Qq",
+      "scope": "leanprover-community",
+      "inherited": true,
+      "dir": "/Users/tsuki/Desktop/SunMatrix/.lake/packages/Qq",
+      "configFile": "lakefile.toml",
+      "manifestFile": "lake-manifest.json"
+    },
+    {
+      "type": "path",
+      "name": "batteries",
+      "scope": "leanprover-community",
+      "inherited": true,
+      "dir": "/Users/tsuki/Desktop/SunMatrix/.lake/packages/batteries",
+      "configFile": "lakefile.toml",
+      "manifestFile": "lake-manifest.json"
+    },
+    {
+      "type": "path",
+      "name": "Cli",
+      "scope": "leanprover",
+      "inherited": true,
+      "dir": "/Users/tsuki/Desktop/SunMatrix/.lake/packages/Cli",
+      "configFile": "lakefile.toml",
+      "manifestFile": "lake-manifest.json"
+    },
+    {
+      "type": "path",
+      "name": "mathlib",
+      "scope": "leanprover-community",
+      "inherited": false,
+      "dir": "/Users/tsuki/Desktop/SunMatrix/.lake/packages/mathlib",
+      "configFile": "lakefile.lean",
+      "manifestFile": "lake-manifest.json"
+    }
+  ],
+  "name": "makarLimanovAudit",
+  "lakeDir": ".lake"
+}

@@ -1,0 +1,10 @@
+name = "makarLimanovAudit"
+version = "0.1.0"
+defaultTargets = ["MakarLimanov", "MakarLimanov.Main"]
+
+[[require]]
+name = "mathlib"
+path = "/Users/tsuki/Desktop/SunMatrix/.lake/packages/mathlib"
+
+[[lean_lib]]
+name = "MakarLimanov"

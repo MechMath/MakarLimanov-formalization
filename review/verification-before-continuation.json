@@ -1,0 +1,28 @@
+{
+  "checked_at": "2026-09-29T10:16:25.149670+00:00",
+  "full_original_theorem_verified": false,
+  "status": "partial_formalization",
+  "lean_toolchain": "leanprover/lean4:v4.30.0-rc1",
+  "mathlib_commit": "0c154d67103f74be3a0f2c509f72ccbf5be9f2a7",
+  "lake_build": "passed",
+  "public_theorems_audited": 31,
+  "mathematical_modules": 7,
+  "sorry_scan_count": 0,
+  "allowed_axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "source_hashes": {
+    "MakarLimanov/Assembly.lean": "24b000374882a5fba88c7a80193506d6a4580a7b27201b49d2f73ad84235076a",
+    "MakarLimanov/BoundaryRank.lean": "5a13e1a1d2816c1e838fbf25fcef4ac03f390d3864f8648d4c52b82d18064cb3",
+    "MakarLimanov/Descent.lean": "7fc5b4ffe4dbef8ef2421dcb5137ea6e63f113b61253295ae778c80b13306208",
+    "MakarLimanov/MatrixDescent.lean": "9fd97a27b90ad10bfab348b724ddbc9009e5486a556d25b3894471f636a98724",
+    "MakarLimanov/Numerics.lean": "d6a8e09119b1ee34e35b64fcd61c152bf3996e75c76ae93af3f4a386ab5e2d68",
+    "MakarLimanov/ScalarReduction.lean": "5c3a5a9a3aa0c26983c68c7375782c259f4f2f4b4d944761f40bcdb86450f38d",
+    "MakarLimanov/Statement.lean": "2a4eafd7a6978aab0ae3f4b6f7fee9616f91ffb5b69c27b24a6b97acf15eb3b0"
+  },
+  "unproved_target": "MakarLimanov.OriginalConjecture",
+  "missing_core": "Two-generator support bounds; differential symbol algebra and compatible extensions; Newton construction; infinite-matrix realization and compression witnesses.",
+  "conditional_assembly_hypothesis_unproved": "MakarLimanov.rankInfimumZero_of_extension_witnesses: hZ"
+}
