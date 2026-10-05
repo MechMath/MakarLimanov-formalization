@@ -1,6 +1,7 @@
 import MakarLimanov
 
--- Audit every public proved theorem; the original conjecture remains a definition.
+-- Report the axioms of selected foundational theorems.
+-- Use FullAxiomAudit.lean for the complete library audit.
 #print axioms MakarLimanov.rankInfimumZero_of_extension_witnesses
 #print axioms MakarLimanov.matrix_rank_add_le
 #print axioms MakarLimanov.rank_coordinateProjection

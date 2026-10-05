@@ -13,8 +13,8 @@ namespace MakarLimanov
 
 /-- The exact original conjecture. -/
 theorem makarLimanov (K : Type*) [Field K] [IsAlgClosed K] [CharZero K] (d : ℕ) :
-    OriginalConjecture K d := by
-  exact originalConjecture_of_normalizedBinary K
+    OriginalConjecture K d :=
+  originalConjecture_of_normalizedBinary K
     (normalizedBinaryClaim_of_audited_assumptions K) d
 
 end MakarLimanov

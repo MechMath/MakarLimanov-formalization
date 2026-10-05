@@ -8,12 +8,13 @@ import Mathlib.Tactic
 # Exact target and the final analytic reduction
 
 The target is the original infimum over positive matrix sizes. `minRank` is an attained
-minimum, not an arbitrarily chosen rank. This file does NOT prove `OriginalConjecture`.
+minimum, not an arbitrarily chosen rank. The final proof is assembled in `MakarLimanov.Main`.
 -/
 
 namespace MakarLimanov
 
 universe u
+
 variable {K : Type u} [Field K] {d : ℕ}
 
 abbrev Mat (K : Type u) (n : ℕ) := Matrix (Fin n) (Fin n) K
@@ -29,7 +30,8 @@ theorem eval_mul (f g : FreePoly K d) {n : ℕ} (Z : Fin d → Mat K n) :
   map_mul (FreeAlgebra.lift K Z) f g
 
 theorem eval_generator {n : ℕ} (Z : Fin d → Mat K n) (i : Fin d) :
-    eval (FreeAlgebra.ι K i) Z = Z i := FreeAlgebra.lift_ι_apply Z i
+    eval (FreeAlgebra.ι K i) Z = Z i :=
+  FreeAlgebra.lift_ι_apply Z i
 
 theorem eval_constant (c : K) {n : ℕ} (Z : Fin d → Mat K n) :
     eval (algebraMap K (FreePoly K d) c) Z = algebraMap K (Mat K n) c :=
@@ -66,7 +68,7 @@ def RankInfimumZero (f : FreePoly K d) : Prop := sInf (rankRatios f) = 0
 def Nonconstant (f : FreePoly K d) : Prop :=
   ∀ c : K, f ≠ algebraMap K (FreePoly K d) c
 
-/-- The original conjecture at a fixed field and number of free generators. UNPROVED. -/
+/-- The original conjecture at a fixed field and number of free generators. -/
 def OriginalConjecture (K : Type u) [Field K] [IsAlgClosed K] [CharZero K] (d : ℕ) : Prop :=
   ∀ f : FreePoly K d, Nonconstant f → RankInfimumZero f
 
