@@ -1,2 +1,29 @@
 .lake/
 /Makar_Limanov.pdf
+
+# Local logs, review notes, and runtime state
+/logs/
+/review/
+/run/
+
+# macOS metadata
+.DS_Store
+._*
+
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# LaTeX build intermediates
+*.aux
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.toc
+*.out
+
+# Editor temporary files
+*.swp
+*.swo
+*~
