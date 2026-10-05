@@ -31,14 +31,12 @@ lemma counts_eq_single (b : Bool) (n : ℕ) (w : List Bool) :
   · intro h
     have hnot : (!b) ∉ w := by
       have hh := congrArg (fun z : Bool →₀ ℕ ↦ z (!b)) h
-      dsimp only at hh
       cases b <;> simpa [counts_apply, List.count_eq_zero] using hh
     have hall : ∀ c ∈ w, c = b := by
       intro c hc
       cases b <;> cases c <;> simp_all
     have hrep := List.eq_replicate_of_mem hall
     have hn := congrArg (fun z : Bool →₀ ℕ ↦ z b) h
-    dsimp only at hn
     rw [hrep, counts_replicate] at hn
     simp only [Finsupp.single_eq_same] at hn
     simpa [hn] using hrep
@@ -55,7 +53,7 @@ lemma product_X (w : List Bool) :
     simp
 
 lemma abelianize_expansion (g : FreeAlgebra K Bool) :
-    binaryAbelianize K g = (wordCoefficients g).sum
+    binaryAbelianize K g = (wordCoefficients g).coeff.sum
       (fun w c ↦ MvPolynomial.monomial (counts w.toList) c) := by
   rw [binaryAbelianize, lift_eq_word_sum]
   apply Finset.sum_congr rfl
@@ -65,8 +63,8 @@ lemma abelianize_expansion (g : FreeAlgebra K Bool) :
   simp
 
 lemma pure_coefficient (g : FreeAlgebra K Bool) (b : Bool) (n : ℕ) :
-    MvPolynomial.coeff (Finsupp.single b n) (binaryAbelianize K g) =
-      wordCoefficients g (FreeMonoid.ofList (List.replicate n b)) := by
+    AddMonoidAlgebra.coeff (binaryAbelianize K g) (Finsupp.single b n) =
+      (wordCoefficients g).coeff (FreeMonoid.ofList (List.replicate n b)) := by
   classical
   rw [abelianize_expansion]
   simp only [Finsupp.sum, MvPolynomial.coeff_sum, MvPolynomial.coeff_monomial]
@@ -75,15 +73,15 @@ lemma pure_coefficient (g : FreeAlgebra K Bool) (b : Bool) (n : ℕ) :
     rw [counts_eq_single]
     exact FreeMonoid.toList.injective.eq_iff.symm
   simp_rw [heq]
-  by_cases h : wordCoefficients g (FreeMonoid.ofList (List.replicate n b)) = 0 <;> simp [h]
+  by_cases h : (wordCoefficients g).coeff (FreeMonoid.ofList (List.replicate n b)) = 0 <;> simp [h]
 
 /-- Every occupied word contains both letters. -/
 theorem support_contains_both (g : FreeAlgebra K Bool) (hg : binaryAbelianize K g = 0)
-    (w : FreeMonoid Bool) (hw : w ∈ (wordCoefficients g).support) :
+    (w : FreeMonoid Bool) (hw : w ∈ (wordCoefficients g).coeff.support) :
     false ∈ w.toList ∧ true ∈ w.toList := by
-  have hcoeff : wordCoefficients g w ≠ 0 := Finsupp.mem_support_iff.mp hw
+  have hcoeff : (wordCoefficients g).coeff w ≠ 0 := Finsupp.mem_support_iff.mp hw
   have hpure (b : Bool) (n : ℕ) :
-      wordCoefficients g (FreeMonoid.ofList (List.replicate n b)) = 0 := by
+      (wordCoefficients g).coeff (FreeMonoid.ofList (List.replicate n b)) = 0 := by
     rw [← pure_coefficient, hg]
     simp
   constructor
@@ -107,7 +105,7 @@ theorem support_contains_both (g : FreeAlgebra K Bool) (hg : binaryAbelianize K 
 /-- The commutator-kernel support has at least one occurrence of each letter. -/
 theorem support_word_length_ge_two (g : FreeAlgebra K Bool)
     (hg : binaryAbelianize K g = 0) (w : FreeMonoid Bool)
-    (hw : w ∈ (wordCoefficients g).support) :
+    (hw : w ∈ (wordCoefficients g).coeff.support) :
     2 ≤ w.toList.length := by
   obtain ⟨hf, ht⟩ := support_contains_both g hg w hw
   cases hL : w.toList with
@@ -126,10 +124,11 @@ theorem wordDegree_ge_two_of_abelianize_zero
     (g : FreeAlgebra K Bool) (hg0 : g ≠ 0)
     (hg : binaryAbelianize K g = 0) : 2 ≤ wordDegree g := by
   classical
-  have hwc : wordCoefficients g ≠ 0 := by
+  have hwc : (wordCoefficients g).coeff ≠ 0 := by
     intro h
     apply hg0
     apply FreeAlgebra.equivMonoidAlgebraFreeMonoid.injective
+    apply MonoidAlgebra.coeff_injective
     simpa [wordCoefficients] using h
   obtain ⟨w, hw⟩ := Finsupp.support_nonempty_iff.mpr hwc
   exact (support_word_length_ge_two g hg w hw).trans

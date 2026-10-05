@@ -641,6 +641,88 @@ For $1\leq i\leq d$, set $W_{i,T}=X'_T(Y'_T)^i$. These are permitted matrices in
 The integers $D,A$ depend only on the fixed input and its reduction. For every real $\varepsilon>0$, choose an integer $T>4DA/\varepsilon$. The displayed ratio is then less than $\varepsilon$. All possible normalized ranks are nonnegative, so their infimum is zero. This is the exact stated infimum over positive sizes; no assertion about a finite attained zero or a bound at every size is required.
 \end{proof}
 
+\appendix
+\section{Lean formalization and computational verification}\label{app:formalization}
+The accompanying repository contains a Lean~4 formalization of
+Theorem~\ref{thm:main}, using Lean \texttt{v4.34.1} and the matching
+mathlib \texttt{v4.34.1} release. The exact dependency commits are recorded
+in \texttt{lake-manifest.json}.
+The declaration \texttt{MakarLimanov.makarLimanov} in
+\texttt{MakarLimanov/Main.lean} proves the statement for every algebraically
+closed field of characteristic zero and every finite number of generators.
+In \texttt{MakarLimanov/Statement.lean}, free polynomials are elements of
+\texttt{FreeAlgebra}, matrix evaluation is the induced algebra homomorphism,
+and the minimum rank is an attained minimum. The real infimum is taken over
+positive matrix sizes, exactly as in Theorem~\ref{thm:main}.
+
+More explicitly, the Lean declaration corresponding to
+Theorem~\ref{thm:main} is the following (inside the namespace
+\texttt{MakarLimanov}; \texttt{Nat} denotes $\mathbb N$):
+\begin{verbatim}
+theorem makarLimanov (K : Type*)
+    [Field K] [IsAlgClosed K] [CharZero K] (d : Nat) :
+    OriginalConjecture K d :=
+  originalConjecture_of_normalizedBinary K
+    (normalizedBinaryClaim_of_audited_assumptions K) d
+\end{verbatim}
+Here \texttt{K} corresponds to the field $k$, and the three typeclass
+assumptions express that it is a field, algebraically closed, and of
+characteristic zero. The type \texttt{FreePoly K d} is
+\texttt{FreeAlgebra K (Fin d)}, so its generators are indexed by a finite
+type with exactly $d$ elements. The predicate \texttt{Nonconstant f}
+means that $f$ differs from the image of every scalar under the canonical
+algebra map, expressing precisely $f\notin k$.
+
+Unfolding \texttt{OriginalConjecture}, \texttt{RankInfimumZero}, and
+\texttt{rankRatios} gives the following statement:
+\begin{verbatim}
+forall f : FreePoly K d, Nonconstant f ->
+  sInf {r : Real | exists n : Nat, 0 < n /\
+    r = (minRank f n : Real) / n} = 0
+\end{verbatim}
+The quantity \texttt{minRank f n} is $r_f(n)$ from
+Theorem~\ref{thm:main}: \texttt{minRank\_attained} proves that some tuple
+\texttt{Z : Fin d -> Mat K n} attains it, and \texttt{minRank\_le} proves
+that it is at most the rank of every evaluated value.
+Here \texttt{Mat K n} is the type of matrices with rows and columns
+indexed by \texttt{Fin n}, and \texttt{eval f Z} preserves the ordered
+products in $f$. The condition \texttt{0 < n} excludes size zero;
+the quotient is a real number, and \texttt{sInf} denotes its real
+infimum. Thus the formal conclusion is exactly
+$\inf_{n\geq1} r_f(n)/n=0$.
+
+The formal proof follows the two-generator reduction, differential separation,
+finite Newton approximation, symbol realization, matrix compression, and
+descent used above. For the Newton step, it establishes a uniform support
+bound before choosing the target precision; it does not require the stronger
+explicit initial bound in the paper.
+
+The main theorem uses only Lean's standard axioms
+\texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}, with no
+\texttt{sorry} or additional axioms. The file \texttt{MainAxiomAudit.lean}
+reports its transitive axiom dependencies, while \texttt{FullAxiomAudit.lean}
+checks all project declarations, including private helpers, against the same
+list. These checks can be reproduced with \texttt{lake exe cache get} and
+\texttt{lake build}, followed by
+\texttt{lake env lean MainAxiomAudit.lean} and
+\texttt{lake env lean FullAxiomAudit.lean}. The Git dependency in
+\texttt{lakefile.toml} allows the same setup to be used on another machine.
+
+An independent auxiliary computation is provided by
+\texttt{verify\_trace\_square.py}. With $[A,B]=AB-BA$, it forms
+\[
+ C=[Y,X],\qquad P=[X,C[X,C^2]]
+\]
+for two generic $3\times3$ matrices and checks
+$\operatorname{tr}(P)=\operatorname{tr}(P^2)=0$ by exact polynomial arithmetic
+over $\mathbb Z[x_{11},\ldots,x_{33},y_{11},\ldots,y_{33}]$.
+The matrix entries are independent commuting variables, while matrix
+multiplication preserves the order of the factors. Thus this checks
+polynomial identities rather than sampled numerical instances. The script
+requires SymPy and can be run with \texttt{python verify\_trace\_square.py}.
+This computation is separate from the Lean proof of
+Theorem~\ref{thm:main} and is not used as a premise of that proof.
+
 \bibliographystyle{KLMM/klmm}
 \bibliography{references/refs}
 \end{document}

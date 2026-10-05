@@ -41,7 +41,7 @@ theorem dilation_coeff {F σ : Type*} [CommSemiring F]
     split_ifs with h
     · subst e; rfl
     · simp
-  | add P Q hP hQ => simp only [map_add, coeff_add, hP, hQ, mul_add]
+  | add P Q hP hQ => simp only [map_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hP, hQ, mul_add]
 
 /-- In characteristic zero, covariance under doubling detects homogeneous degree. -/
 theorem isHomogeneous_of_dilation_two {F σ : Type*} [Field F] [CharZero F]
@@ -51,7 +51,6 @@ theorem isHomogeneous_of_dilation_two {F σ : Type*} [Field F] [CharZero F]
   change (Finsupp.weight (fun _ : σ ↦ 1)) d = j
   rw [← Finsupp.degree_eq_weight_one]
   have he := congrArg (fun Q : MvPolynomial σ F ↦ Q.coeff d) hP
-  dsimp only at he
   rw [dilation_coeff, coeff_smul, smul_eq_mul] at he
   have hp : (2 : F) ^ d.degree = (2 : F) ^ j :=
     (mul_right_inj' hd).mp (by simpa [mul_comm] using he)

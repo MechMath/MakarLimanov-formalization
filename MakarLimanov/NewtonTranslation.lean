@@ -53,7 +53,7 @@ theorem DegreeLowerBound.mul {m n : ℕ} {P Q : MvPolynomial σ R}
   apply Finset.sum_eq_zero
   rintro ⟨a, b⟩ hab
   have heq : a.degree + b.degree = d.degree := by
-    rw [← map_add, Finset.mem_antidiagonal.mp hab]
+    rw [← map_add, Finset.HasAntidiagonal.mem_antidiagonal.mp hab]
   by_cases ha : a.degree < m
   · simp [hP a ha]
   · have hb : b.degree < n := by omega
@@ -69,7 +69,7 @@ theorem DegreeLowerBound.pow {n : ℕ} {P : MvPolynomial σ R}
 theorem DegreeLowerBound.homogeneousComponent_eq_zero {n k : ℕ} {P : MvPolynomial σ R}
     (hP : DegreeLowerBound n P) (hk : k < n) : homogeneousComponent k P = 0 := by
   ext d
-  rw [coeff_homogeneousComponent, coeff_zero]
+  rw [coeff_homogeneousComponent, MvPolynomial.coeff_zero]
   split_ifs with hd
   · exact hP d (hd ▸ hk)
   · rfl
@@ -87,7 +87,7 @@ theorem homogeneousComponent_mul_of_lowerBound {m n : ℕ} {P Q : MvPolynomial �
     apply Finset.sum_congr rfl
     rintro ⟨a, b⟩ hab
     have heq : a.degree + b.degree = m + n := by
-      rw [← map_add, Finset.mem_antidiagonal.mp hab, hd]
+      rw [← map_add, Finset.HasAntidiagonal.mem_antidiagonal.mp hab, hd]
     rw [coeff_homogeneousComponent, coeff_homogeneousComponent]
     by_cases ha : a.degree = m
     · have hb : b.degree = n := by omega
@@ -176,7 +176,8 @@ theorem linearization_ne_zero (v : σ → R) (P : MvPolynomial σ R) (i : σ)
     (hi : MvPolynomial.eval v (pderiv i P) ≠ 0) : linearization v P ≠ 0 := by
   intro h
   apply hi
-  rw [← coeff_linearization, h, coeff_zero]
+  rw [← coeff_linearization, h, MvPolynomial.coeff_zero]
+  rfl
 
 theorem linearization_isHomogeneous (v : σ → R) (P : MvPolynomial σ R) :
     (linearization v P).IsHomogeneous 1 :=

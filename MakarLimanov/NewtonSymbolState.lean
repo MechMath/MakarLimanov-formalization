@@ -260,8 +260,6 @@ structure RefinedCorrection (S S' : State g A) (e : ℕ) (q : ℤ) where
     (∀ j < S'.b, MvPolynomial.homogeneousComponent j translated = 0) ∧
       MvPolynomial.homogeneousComponent S'.b translated ≠ 0
 
-attribute [instance] RefinedCorrection.algebra RefinedCorrection.tower
-
 theorem RefinedCorrection.step {S S' : State g A} {e : ℕ} {q : ℤ}
     (C : RefinedCorrection S S' e q) : S.Step S' := by
   refine ⟨e, C.positive_factor, C.denominator_eq, ?_⟩

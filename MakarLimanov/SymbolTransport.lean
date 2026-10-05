@@ -11,6 +11,9 @@ with the correct denominator factors.
 
 noncomputable section
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.SymbolSeries
 
 open HahnSeries StarSeries

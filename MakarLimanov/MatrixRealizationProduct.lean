@@ -174,7 +174,7 @@ theorem realize_coordinateDelta_finite (hp : 0 < p)
 /-- The concrete matrix normal-order formula for finite coordinate symbols. -/
 theorem realize_normal_order_finite (hp : 0 < p)
     {x : LaurentSeries (BiSeries F)} (hx : FiniteCoordinate x) (n : ℕ) :
-    realize p x * (tMatrix p) ^ n = ∑ ac ∈ Finset.antidiagonal n,
+    realize p x * (tMatrix p) ^ n = ∑ ac ∈ Finset.HasAntidiagonal.antidiagonal n,
       n.choose ac.1 • ((tMatrix p) ^ ac.1 *
         realize p ((coordinateDelta p)^[ac.2] x)) := by
   apply NormalOrdering.normal_order_sequence

@@ -253,6 +253,14 @@ noncomputable instance : Ring (Controlled P K) := Ring.ofMinimalAxioms
   (by intro A B C; apply ext; intro i j; exact congrFun (congrFun
     (add_product _ _ _ A.controlled B.controlled C.controlled) _) _)
 
+@[simp] theorem entries_one : (1 : Controlled P K).entries = scalarMatrix 1 := rfl
+
+@[simp] theorem entries_add (A B : Controlled P K) :
+    (A + B).entries = A.entries + B.entries := rfl
+
+@[simp] theorem entries_mul (A B : Controlled P K) :
+    (A * B).entries = product A.entries B.entries := rfl
+
 /-- Scalars act by diagonal matrices. -/
 noncomputable def scalarHom : K →+* Controlled P K where
   toFun a := ⟨scalarMatrix a, ⟨0, scalar_bound a⟩⟩

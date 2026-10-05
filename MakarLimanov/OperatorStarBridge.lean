@@ -62,13 +62,13 @@ private theorem lowerBound_word_sum
     (hb : ∀ c : Bool, LowerBound b (toSeries (X c)))
     (f : FreeAlgebra k Bool) (M : ℕ)
     (hbneg : b ≤ 0)
-    (hM : ∀ w ∈ (wordCoefficients f).support, w.toList.length ≤ M) :
+    (hM : ∀ w ∈ (wordCoefficients f).coeff.support, w.toList.length ≤ M) :
     LowerBound ((M : ℤ) * b)
       (toSeries (FreeAlgebra.lift k X f)) := by
   rw [ControlledMatrix.lift_eq_word_sum]
-  let s := wordCoefficients f
+  let s := (wordCoefficients f).coeff
   have hs : ∀ s : FreeMonoid Bool →₀ k,
-      s.support ⊆ (wordCoefficients f).support →
+      s.support ⊆ (wordCoefficients f).coeff.support →
       LowerBound ((M : ℤ) * b)
         (toSeries (s.sum (fun w c ↦ c • (w.toList.map X).prod))) := by
     classical
@@ -88,7 +88,7 @@ private theorem lowerBound_word_sum
                   by_contra hne
                   exact hws (Finsupp.mem_support_iff.mpr hne)
                 simp [Finsupp.single_eq_same, hsw, hc]
-              have hwf : w ∈ (wordCoefficients f).support := hsub hwadd
+              have hwf : w ∈ (wordCoefficients f).coeff.support := hsub hwadd
               have hlen := hM w hwf
               have hwprod := lowerBound_list_prod hp δ η h X b hb (w.toList)
               have hbase : (M : ℤ) * b ≤ (w.toList.length : ℤ) * b := by
@@ -129,7 +129,7 @@ theorem lift_lowerBound_of_letter_bounds
     (hb : ∀ c : Bool, LowerBound b (toSeries (X c)))
     (f : FreeAlgebra k Bool) (M : ℕ)
     (hbneg : b ≤ 0)
-    (hM : ∀ w ∈ (wordCoefficients f).support, w.toList.length ≤ M) :
+    (hM : ∀ w ∈ (wordCoefficients f).coeff.support, w.toList.length ≤ M) :
     LowerBound ((M : ℤ) * b)
       (toSeries (FreeAlgebra.lift k X f)) := by
   exact lowerBound_word_sum hp δ η h X b hb f M hbneg hM
@@ -140,7 +140,7 @@ theorem evaluateAt_lowerBound
     (h : Function.Commute δ η) (z : LaurentSeries F) (b : ℤ)
     (hz : LowerBound b z) (hbneg : b ≤ -(p : ℤ))
     (f : FreeAlgebra k Bool) (M : ℕ)
-    (hM : ∀ w ∈ (wordCoefficients f).support, w.toList.length ≤ M) :
+    (hM : ∀ w ∈ (wordCoefficients f).coeff.support, w.toList.length ≤ M) :
     LowerBound ((M : ℤ) * b)
       (toSeries (evaluateAt (hp := hp) (h := h) z f)) := by
   let X : Bool → StarSeries p hp δ η h :=
@@ -159,14 +159,14 @@ theorem evaluateAt_lowerBound
   have hbzero : b ≤ 0 := by
     omega
   have hmain := lift_lowerBound_of_letter_bounds hp δ η h X b hX f M hbzero hM
-  simpa [X, evaluateAt, evaluatePair] using hmain
+  simpa [X, evaluateAt, evaluatePair, evaluate] using hmain
 
 theorem evaluateAt_add_single_lowerBound
     {p : ℕ} (hp : 0 < p) (δ η : Derivation k F F)
     (h : Function.Commute δ η) (z : LaurentSeries F) (b q : ℤ)
     (hz : LowerBound b z) (hbneg : b ≤ -(p : ℤ)) (hbq : b ≤ q)
     (w : F) (f : FreeAlgebra k Bool) (M : ℕ)
-    (hM : ∀ u ∈ (wordCoefficients f).support, u.toList.length ≤ M) :
+    (hM : ∀ u ∈ (wordCoefficients f).coeff.support, u.toList.length ≤ M) :
     LowerBound ((M : ℤ) * b)
       (toSeries (evaluateAt (hp := hp) (h := h)
         (z + HahnSeries.single q w) f)) := by

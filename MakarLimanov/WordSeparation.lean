@@ -192,8 +192,7 @@ theorem wordMatrix_entry (A : ℕ) (w : List Bool) (hw : shifts w ≤ A)
 /-- Extracting a word code from a matrix word returns the Kronecker delta. -/
 theorem wordMatrix_coefficient (A : ℕ) (u v : List Bool)
     (hu : shifts u ≤ A) (hv : shifts v ≤ A) :
-    MvPolynomial.coeff (finiteExponents A u)
-      (wordMatrix (k := k) A v ⟨shifts u, by omega⟩ 0) = if u = v then 1 else 0 := by
+    AddMonoidAlgebra.coeff (wordMatrix (k := k) A v ⟨shifts u, by omega⟩ 0) (finiteExponents A u) = if u = v then 1 else 0 := by
   rw [wordMatrix_entry A v hv]
   by_cases huv : u = v
   · subst v
@@ -209,26 +208,23 @@ open ControlledMatrix
 
 /-- Recover any occupied word coefficient from the finite shift/diagonal evaluation. -/
 theorem evaluation_coefficient (A : ℕ) (f : FreeAlgebra k Bool)
-    (hA : ∀ v ∈ (wordCoefficients f).support, shifts v.toList ≤ A)
+    (hA : ∀ v ∈ (wordCoefficients f).coeff.support, shifts v.toList ≤ A)
     (w : FreeMonoid Bool) (hw : shifts w.toList ≤ A) :
-    MvPolynomial.coeff (finiteExponents A w.toList)
-      ((FreeAlgebra.lift k
+    AddMonoidAlgebra.coeff ((FreeAlgebra.lift k
         (fun b : Bool ↦ if b then diagonalMatrix (k := k) A else shiftMatrix A) f)
-        ⟨shifts w.toList, by omega⟩ 0) = wordCoefficients f w := by
+        ⟨shifts w.toList, by omega⟩ 0) (finiteExponents A w.toList) = (wordCoefficients f).coeff w := by
   classical
   rw [lift_eq_word_sum]
   simp only [Finsupp.sum, Matrix.sum_apply, Matrix.smul_apply, MvPolynomial.coeff_sum,
     MvPolynomial.coeff_smul]
-  have he (v : FreeMonoid Bool) (hv : v ∈ (wordCoefficients f).support) :
-      (wordCoefficients f v) •
-        MvPolynomial.coeff (finiteExponents A w.toList)
-          ((v.toList.map
+  have he (v : FreeMonoid Bool) (hv : v ∈ (wordCoefficients f).coeff.support) :
+      ((wordCoefficients f).coeff v) •
+        AddMonoidAlgebra.coeff ((v.toList.map
             (fun b : Bool ↦ if b then diagonalMatrix (k := k) A else shiftMatrix A)).prod
-            ⟨shifts w.toList, by omega⟩ 0) =
-        if v = w then wordCoefficients f w else 0 := by
-    change (wordCoefficients f v) •
-      MvPolynomial.coeff (finiteExponents A w.toList)
-        (wordMatrix A v.toList ⟨shifts w.toList, by omega⟩ 0) = _
+            ⟨shifts w.toList, by omega⟩ 0) (finiteExponents A w.toList) =
+        if v = w then (wordCoefficients f).coeff w else 0 := by
+    change ((wordCoefficients f).coeff v) •
+      AddMonoidAlgebra.coeff (wordMatrix A v.toList ⟨shifts w.toList, by omega⟩ 0) (finiteExponents A w.toList) = _
     rw [wordMatrix_coefficient A w.toList v.toList hw (hA v hv)]
     by_cases hvw : v = w
     · subst v
@@ -236,22 +232,24 @@ theorem evaluation_coefficient (A : ℕ) (f : FreeAlgebra k Bool)
     · have hl : w.toList ≠ v.toList := fun h ↦ hvw (FreeMonoid.toList.injective h).symm
       simp [hvw, hl]
   rw [Finset.sum_congr rfl he]
-  by_cases hw' : w ∈ (wordCoefficients f).support
+  by_cases hw' : w ∈ (wordCoefficients f).coeff.support
   · simp [hw']
   · simp [Finsupp.notMem_support_iff.mp hw']
 
 /-- Every nonzero polynomial of bounded shift degree has a nonzero finite matrix value. -/
 theorem evaluation_ne_zero (A : ℕ) (f : FreeAlgebra k Bool) (hf : f ≠ 0)
-    (hA : ∀ v ∈ (wordCoefficients f).support, shifts v.toList ≤ A) :
+    (hA : ∀ v ∈ (wordCoefficients f).coeff.support, shifts v.toList ≤ A) :
     FreeAlgebra.lift k
       (fun b : Bool ↦ if b then diagonalMatrix (k := k) A else shiftMatrix A) f ≠ 0 := by
   classical
-  have hc : wordCoefficients f ≠ 0 := by
+  have hc : (wordCoefficients f).coeff ≠ 0 := by
     intro hh
     apply hf
-    exact FreeAlgebra.equivMonoidAlgebraFreeMonoid.injective (by simpa [wordCoefficients] using hh)
+    apply FreeAlgebra.equivMonoidAlgebraFreeMonoid.injective
+    apply MonoidAlgebra.coeff_injective
+    simpa [wordCoefficients] using hh
   obtain ⟨w, hw⟩ := Finsupp.ne_iff.mp hc
-  have hw' : w ∈ (wordCoefficients f).support := Finsupp.mem_support_iff.mpr hw
+  have hw' : w ∈ (wordCoefficients f).coeff.support := Finsupp.mem_support_iff.mpr hw
   intro hz
   have he := evaluation_coefficient A f hA w (hA w hw')
   rw [hz] at he
@@ -263,7 +261,7 @@ theorem exists_evaluation_ne_zero (f : FreeAlgebra k Bool) (hf : f ≠ 0) :
     ∃ A : ℕ, FreeAlgebra.lift k
       (fun b : Bool ↦ if b then diagonalMatrix (k := k) A else shiftMatrix A) f ≠ 0 := by
   classical
-  refine ⟨(wordCoefficients f).support.sup (fun w ↦ shifts w.toList), ?_⟩
+  refine ⟨(wordCoefficients f).coeff.support.sup (fun w ↦ shifts w.toList), ?_⟩
   apply evaluation_ne_zero _ f hf
   intro w hw
   exact Finset.le_sup hw

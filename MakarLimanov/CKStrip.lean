@@ -5,6 +5,9 @@ import Mathlib.Tactic
 
 /-! Commuting derivations on a rational strip and its separable algebraic extensions. -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.CKStrip
 open PolynomialDerivations LocalizedDerivations
 section Ext
@@ -172,7 +175,9 @@ lemma strip_commute (δ η : Derivation k F F) (hc : Function.Commute δ η) (u 
       · rw [Function.iterate_succ_apply', sub_self]
   intro a
   have ha := DFunLike.congr_fun hz a
-  simpa [Derivation.compAlgebraMap, Derivation.commutator_apply, sub_eq_zero] using ha
+  change D δ η u (H η (algebraMap K E a)) -
+    H η (D δ η u (algebraMap K E a)) = 0 at ha
+  exact sub_eq_zero.mp ha
 omit [Algebra F E] [Algebra (MvPolynomial (Fin N × ℕ) F) E]
   [IsScalarTower k F E] [IsScalarTower F K E]
   [IsScalarTower F (MvPolynomial (Fin N × ℕ) F) E]

@@ -7,7 +7,7 @@ variable {k B A : Type*} [CommRing k] [CommRing B] [Ring A] [Algebra k B]
 /-- Binomial normal ordering from the single commutator identity. -/
 theorem normal_order (φ : B →+* A) (D : Derivation k B B) (T : A)
     (hcomm : ∀ b, φ b * T = T * φ b + φ (D b)) (b : B) (n : ℕ) :
-    φ b * T^n = ∑ ab ∈ Finset.antidiagonal n,
+    φ b * T^n = ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal n,
       n.choose ab.1 • (T^ab.1 * φ (D^[ab.2] b)) := by
   induction n with
   | zero => simp
@@ -17,7 +17,7 @@ theorem normal_order (φ : B →+* A) (D : Derivation k B B) (T : A)
     rw [← Finset.sum_add_distrib]
     apply Finset.sum_congr rfl
     rintro ⟨a,c⟩ hac
-    have hn := Finset.mem_antidiagonal.mp hac
+    have hn := Finset.HasAntidiagonal.mem_antidiagonal.mp hac
     rw [n.choose_symm_of_eq_add hn.symm]
     simp only [smul_mul_assoc, mul_assoc, hcomm, mul_add, pow_succ,
       Function.iterate_succ_apply']
@@ -40,7 +40,7 @@ lemma negative_derivation_commutator (D : Derivation k B B) (b : B) :
 
 /-- Normal ordering for the actual differential operator T = -D. -/
 theorem derivative_normal_order (D : Derivation k B B) (b : B) (n : ℕ) :
-    multiplicationHom b * (-D.toLinearMap)^n = ∑ ac ∈ Finset.antidiagonal n,
+    multiplicationHom b * (-D.toLinearMap)^n = ∑ ac ∈ Finset.HasAntidiagonal.antidiagonal n,
       n.choose ac.1 • ((-D.toLinearMap)^ac.1 * multiplicationHom (D^[ac.2] b)) :=
   normal_order multiplicationHom D (-D.toLinearMap) (negative_derivation_commutator D) b n
 end MakarLimanov.NormalOrdering
@@ -53,7 +53,7 @@ variable {A : Type*} [Ring A]
 commutators; no extension of that sequence to all ring elements is needed. -/
 theorem normal_order_sequence (b : ℕ → A) (T : A)
     (hcomm : ∀ j, b j * T = T * b j + b (j + 1)) (n : ℕ) :
-    b 0 * T ^ n = ∑ ac ∈ Finset.antidiagonal n,
+    b 0 * T ^ n = ∑ ac ∈ Finset.HasAntidiagonal.antidiagonal n,
       n.choose ac.1 • (T ^ ac.1 * b ac.2) := by
   induction n with
   | zero => simp
@@ -63,7 +63,7 @@ theorem normal_order_sequence (b : ℕ → A) (T : A)
     rw [← Finset.sum_add_distrib]
     apply Finset.sum_congr rfl
     rintro ⟨a, c⟩ hac
-    rw [n.choose_symm_of_eq_add (Finset.mem_antidiagonal.mp hac).symm]
+    rw [n.choose_symm_of_eq_add (Finset.HasAntidiagonal.mem_antidiagonal.mp hac).symm]
     rw [smul_mul_assoc, mul_assoc, hcomm c, mul_add]
     simp only [pow_succ, ← mul_assoc, smul_add]
     abel
@@ -78,7 +78,7 @@ variable {A : Type*} [Ring A]
 ring may itself be noncommutative. -/
 theorem normal_order_iterates (d : A → A) (T : A)
     (hcomm : ∀ b, b * T = T * b + d b) (b : A) (n : ℕ) :
-    b * T ^ n = ∑ ac ∈ Finset.antidiagonal n,
+    b * T ^ n = ∑ ac ∈ Finset.HasAntidiagonal.antidiagonal n,
       n.choose ac.1 • (T ^ ac.1 * d^[ac.2] b) := by
   induction n with
   | zero => simp
@@ -88,7 +88,7 @@ theorem normal_order_iterates (d : A → A) (T : A)
     rw [← Finset.sum_add_distrib]
     apply Finset.sum_congr rfl
     rintro ⟨a, c⟩ hac
-    rw [n.choose_symm_of_eq_add (Finset.mem_antidiagonal.mp hac).symm]
+    rw [n.choose_symm_of_eq_add (Finset.HasAntidiagonal.mem_antidiagonal.mp hac).symm]
     rw [smul_mul_assoc, mul_assoc, hcomm (d^[c] b), mul_add]
     simp only [pow_succ, Function.iterate_succ_apply']
     simp only [← mul_assoc, smul_add]

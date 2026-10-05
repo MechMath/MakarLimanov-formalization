@@ -44,12 +44,15 @@ def specializeAlgHom (φ : S →ₐ[k] G) (p : ℕ) (hp : 0 < p)
   map_zero' := specialize_zero φ
   map_one' := by
     have hh := specialize_single φ 0 (1 : S)
+    change specialize φ 1 _ = 1
     simpa using hh
   map_add' U V := specialize_add φ _ _ U.property V.property
   map_mul' U V := specialize_starProduct φ p hp δ η D H hδ hη hφδ hφη
     _ _ U.property V.property
   commutes' a := by
     have hh := specialize_single φ 0 (algebraMap k S a)
+    change specialize φ (HahnSeries.single 0 (algebraMap k F a)) _ =
+      HahnSeries.single 0 (algebraMap k G a)
     simpa using hh
 
 /-- Differential coefficient specialization preserves each actual variation. -/
@@ -184,7 +187,6 @@ theorem exists_universal_variation_coefficient (δ η : Derivation k F F)
   intro D H hDH hD hH w
   have hh := congrArg (fun U : LaurentSeries G ↦ U.coeff n)
     (specialize_genericVariation (E := E) δ η hc p hp q z D H hDH hD hH w f j)
-  dsimp only at hh
   rw [specialize_coeff] at hh
   have heq : (⟨(genericVariation (E := E) δ η hc p hp q z f j).coeff n,
       genericVariation_coefficients δ η hc p hp q z f j n⟩ :

@@ -136,7 +136,6 @@ theorem basisEmbedding_injective (A : ℕ) : Function.Injective (basisEmbedding 
   intro v w h
   funext i
   have hc := congrArg (fun p : Polynomial K ↦ p.coeff (A - i.val)) h
-  dsimp only at hc
   rw [coeff_basisEmbedding, coeff_basisEmbedding] at hc
   exact mul_right_cancel₀ (inv_ne_zero (Nat.cast_ne_zero.mpr (A - i.val).factorial_ne_zero)) hc
 
@@ -258,7 +257,7 @@ theorem map_matrixInput (A : ℕ) (b : Bool) :
 
 /-- The nonzero finite matrix witness stays nonzero in its explicit coefficient field. -/
 theorem generic_matrix_evaluation_ne_zero (A : ℕ) (f : FreeAlgebra k Bool) (hf : f ≠ 0)
-    (hA : ∀ w ∈ (ControlledMatrix.wordCoefficients f).support,
+    (hA : ∀ w ∈ (ControlledMatrix.wordCoefficients f).coeff.support,
       WordSeparation.shifts w.toList ≤ A) :
     FreeAlgebra.lift k (matrixInput A (genericValues (k := k) A)) f ≠ 0 := by
   let φ : Matrix (Fin (A + 1)) (Fin (A + 1)) (MvPolynomial (Fin (A + 1)) k) →ₐ[k]
@@ -285,7 +284,7 @@ theorem generic_matrix_evaluation_ne_zero (A : ℕ) (f : FreeAlgebra k Bool) (hf
 
 /-- A genuine polynomial differential operator separates every nonzero bounded polynomial. -/
 theorem generic_operator_evaluation_ne_zero (A : ℕ) (f : FreeAlgebra k Bool) (hf : f ≠ 0)
-    (hA : ∀ w ∈ (ControlledMatrix.wordCoefficients f).support,
+    (hA : ∀ w ∈ (ControlledMatrix.wordCoefficients f).coeff.support,
       WordSeparation.shifts w.toList ≤ A) :
     FreeAlgebra.lift k (operatorInput A (genericValues (k := k) A)) f ≠ 0 := by
   exact operator_evaluation_ne_zero_of_matrix A _ f (generic_matrix_evaluation_ne_zero A f hf hA)
@@ -294,7 +293,7 @@ theorem generic_operator_evaluation_ne_zero (A : ℕ) (f : FreeAlgebra k Bool) (
 theorem exists_generic_operator_evaluation_ne_zero (f : FreeAlgebra k Bool) (hf : f ≠ 0) :
     ∃ A : ℕ, FreeAlgebra.lift k (operatorInput A (genericValues (k := k) A)) f ≠ 0 := by
   classical
-  refine ⟨(ControlledMatrix.wordCoefficients f).support.sup
+  refine ⟨(ControlledMatrix.wordCoefficients f).coeff.support.sup
     (fun w ↦ WordSeparation.shifts w.toList), ?_⟩
   apply generic_operator_evaluation_ne_zero _ f hf
   intro w hw

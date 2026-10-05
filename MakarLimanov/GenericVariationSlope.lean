@@ -121,7 +121,7 @@ theorem rational_twist_generic_variation_order
       intro hz
       apply hP
       exact (MvPolynomial.map_injective (algebraMap F L)
-        (algebraMap F L).injective) hz
+        (algebraMap F L).injective) (by simpa [PL] using hz)
     have hPLval := hw PL hPL
     intro hz
     apply hPLval

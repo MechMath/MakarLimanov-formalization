@@ -69,7 +69,7 @@ private theorem generic_over_subfield
     intro hz
     apply hP
     exact (MvPolynomial.map_injective (algebraMap F L)
-      (algebraMap F L).injective) hz
+      (algebraMap F L).injective) (by simpa [PL] using hz)
   have hval := hv PL hPL
   intro hz
   apply hval

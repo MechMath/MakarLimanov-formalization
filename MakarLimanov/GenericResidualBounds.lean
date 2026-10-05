@@ -44,15 +44,20 @@ private theorem finite_sum_nonzero_of_component
     (hhom : ∀ j ∈ S, (Q j).IsHomogeneous j)
     {j : ℕ} (hjS : j ∈ S) (hjQ : Q j ≠ 0) :
     (∑ l ∈ S, Q l) ≠ 0 := by
-  obtain ⟨d, hd⟩ := Finsupp.support_nonempty_iff.mpr hjQ
+  have hjcoeff : (Q j).coeff ≠ 0 := by
+    intro h
+    apply hjQ
+    apply AddMonoidAlgebra.coeff_injective
+    simpa using h
+  obtain ⟨d, hd⟩ := Finsupp.support_nonempty_iff.mpr hjcoeff
   have hdcoef : (Q j).coeff d ≠ 0 := Finsupp.mem_support_iff.mp hd
   have hother : ∀ l ∈ S, l ≠ j → (Q l).coeff d = 0 := by
     intro l hl hlj
     by_contra hne
     have hld : d.degree = l := by
-      simpa only [Finsupp.degree_eq_weight_one] using hhom l hl hne
+      simpa only [Finsupp.degree_eq_weight_one, Pi.one_def] using hhom l hl hne
     have hjd : d.degree = j := by
-      simpa only [Finsupp.degree_eq_weight_one] using hhom j hjS hdcoef
+      simpa only [Finsupp.degree_eq_weight_one, Pi.one_def] using hhom j hjS hdcoef
     omega
   have hsumcoef : (∑ l ∈ S, Q l).coeff d ≠ 0 := by
     rw [MvPolynomial.coeff_sum, Finset.sum_eq_single j]
@@ -111,19 +116,19 @@ theorem genericResidual_coeff_zero_iff
     obtain ⟨P, hPmap, Q, hQhom, hQmap, hPsum⟩ :=
       exists_residual_coefficient_representative (E := E) δ η hc p hp q z f r
     have hPsum' : P = ∑ l ∈ S, Q l := by
-      simpa [S, residualSupport] using hPsum
+      simpa [S, residualSupport, ResidualPolynomial.residualVariationSupport] using hPsum
     have hQhom' : ∀ l ∈ S, (Q l).IsHomogeneous l := by
       intro l hl
       apply hQhom l
       apply Polynomial.mem_support_iff.mpr
-      simpa [S, residualSupport] using hl
+      simpa [S, residualSupport, ResidualPolynomial.residualVariationSupport] using hl
     have hQmap' : ∀ l ∈ S,
         algebraMap (MvPolynomial (ℕ × ℕ) F) E (Q l) =
           (genericVariation (E := E) δ η hc p hp q z f l).coeff r := by
       intro l hl
       apply hQmap l
       apply Polynomial.mem_support_iff.mpr
-      simpa [S, residualSupport] using hl
+      simpa [S, residualSupport, ResidualPolynomial.residualVariationSupport] using hl
     have hPzero : P = 0 := by
       apply (IsFractionRing.injective (MvPolynomial (ℕ × ℕ) F) E)
       rw [hPmap, hres]

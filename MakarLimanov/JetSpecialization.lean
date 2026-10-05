@@ -3,6 +3,9 @@ import MakarLimanov.SymbolSpecialization
 
 /-! Specialization of polynomial jet coefficients to actual mixed derivatives. -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.JetSpecialization
 
 open GenericJets JetPolynomialCoefficients
@@ -51,7 +54,7 @@ omit [Algebra F E] [IsScalarTower k F E]
   [IsScalarTower F (MvPolynomial (ℕ × ℕ) F) E] in
 theorem evaluation_jet (D H : Derivation k G G) (w : G) (i j : ℕ) :
     evaluation (E := E) D H w ⟨jet (F := F) i j, jet_mem i j⟩ = D^[i] (H^[j] w) := by
-  simpa only [MvPolynomial.aeval_X] using evaluation_embed (E := E) D H w (MvPolynomial.X (i,j))
+  simpa only [GenericJets.jet, MvPolynomial.aeval_X] using evaluation_embed (E := E) D H w (MvPolynomial.X (i,j))
 
 omit [Algebra F G] [IsScalarTower k F G] [IsScalarTower k F E]
   [IsFractionRing (MvPolynomial (ℕ × ℕ) F) E] in
@@ -232,7 +235,6 @@ theorem exists_universal_coefficient (δ η : Derivation k F F) (hc : Function.C
   intro D H hDH hD hH w
   have hh := congrArg (fun z : LaurentSeries G ↦ z.coeff n)
     (specialize_evaluateAt (E := E) δ η hc p hp q D H hDH hD hH w f)
-  dsimp only at hh
   rw [specialize_coeff] at hh
   have hh' : (⟨(toSeries (FreeAlgebra.lift k (genericInput (E := E) δ η hc p hp q) f)).coeff n,
       DifferentialCoefficients.evaluate p hp _ _ (GenericJets.commute δ η hc)

@@ -7,6 +7,9 @@ When the right input is a coordinate monomial, the infinite diamond product
 reduces to the finite binomial normal-order formula.
 -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.TaylorCoordinates
 
 open HahnSeries Finset

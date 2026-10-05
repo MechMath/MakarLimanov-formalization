@@ -9,6 +9,9 @@ and lower bounds retain the finite data needed when passing to a finer Newton la
 
 noncomputable section
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.SymbolSeries
 
 open HahnSeries StarSeries
@@ -21,7 +24,7 @@ theorem support_refineLattice (e : ℕ) (he : 0 < e) (x : LaurentSeries F) :
   apply Set.Subset.antisymm HahnSeries.support_embDomain_subset
   rintro n ⟨m, hm, rfl⟩
   change (refineLattice e he x).coeff ((e : ℤ) * m) ≠ 0
-  simpa only [refineLattice_coeff] using hm
+  simpa only [refineLattice_coeff] using ((HahnSeries.mem_support x m).mp hm)
 
 /-- A finite symbol remains finite after refining its exponent lattice. -/
 theorem finite_support_refineLattice (e : ℕ) (he : 0 < e) (x : LaurentSeries F)

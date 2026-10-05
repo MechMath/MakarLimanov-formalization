@@ -71,15 +71,20 @@ private theorem finite_sum_nonzero_of_positive_component
     (hpos : ∃ j ∈ S, 0 < j ∧ Q j ≠ 0) :
     (∑ j ∈ S, Q j) ≠ 0 := by
   obtain ⟨j, hjS, hjpos, hjQ⟩ := hpos
-  obtain ⟨d, hd⟩ := Finsupp.support_nonempty_iff.mpr hjQ
+  have hjcoeff : (Q j).coeff ≠ 0 := by
+    intro h
+    apply hjQ
+    apply AddMonoidAlgebra.coeff_injective
+    simpa using h
+  obtain ⟨d, hd⟩ := Finsupp.support_nonempty_iff.mpr hjcoeff
   have hdcoef : (Q j).coeff d ≠ 0 := Finsupp.mem_support_iff.mp hd
   have hother : ∀ l ∈ S, l ≠ j → (Q l).coeff d = 0 := by
     intro l hl hlj
     by_contra hne
     have hld : d.degree = l := by
-      simpa only [Finsupp.degree_eq_weight_one] using hhom l hl hne
+      simpa only [Finsupp.degree_eq_weight_one, Pi.one_def] using hhom l hl hne
     have hjd : d.degree = j := by
-      simpa only [Finsupp.degree_eq_weight_one] using hhom j hjS hdcoef
+      simpa only [Finsupp.degree_eq_weight_one, Pi.one_def] using hhom j hjS hdcoef
     omega
   have hsumcoef : (∑ l ∈ S, Q l).coeff d ≠ 0 := by
     rw [MvPolynomial.coeff_sum, Finset.sum_eq_single j]
@@ -191,13 +196,13 @@ theorem exists_residual_coefficient_representative_sparse
   by_cases hq : (Q j).coeff d = 0
   · exact hq
   · have hdj : d.degree = j := by
-      simpa only [Finsupp.degree_eq_weight_one] using hQhom j hj hq
+      simpa only [Finsupp.degree_eq_weight_one, Pi.one_def] using hQhom j hj hq
     have hactive : (genericVariation (E := E) δ η hc p hp q z f j).coeff r ≠ 0 := by
       intro hz
       have hQzero : Q j = 0 :=
         (IsFractionRing.injective (MvPolynomial (ℕ × ℕ) F) E)
           (by rw [hQmap j hj, hz, map_zero])
-      exact hq (by rw [hQzero, MvPolynomial.coeff_zero])
+      exact hq (by simp [hQzero])
     exact False.elim (hnot (hdj ▸ hdiv j hactive))
 
 /- The sparse representative can be chosen together with the nonunit
@@ -249,13 +254,13 @@ theorem exists_nonunit_residual_coefficient_representative_sparse
   by_cases hq : (Q j).coeff d = 0
   · exact hq
   · have hdj : d.degree = j := by
-      simpa only [Finsupp.degree_eq_weight_one] using hQhom j hj hq
+      simpa only [Finsupp.degree_eq_weight_one, Pi.one_def] using hQhom j hj hq
     have hjactive : (genericVariation (E := E) δ η hc p hp q z f j).coeff r ≠ 0 := by
       intro hz
       have hQzero : Q j = 0 :=
         (IsFractionRing.injective (MvPolynomial (ℕ × ℕ) F) E)
           (by rw [hQmap j hj, hz, map_zero])
-      exact hq (by rw [hQzero, MvPolynomial.coeff_zero])
+      exact hq (by simp [hQzero])
     exact False.elim (hnot (hdj ▸ hdiv j hjactive))
 
 /-- Each monomial in a residual coefficient comes from a nonzero variation
@@ -277,13 +282,13 @@ theorem support_degree_active
   rw [hPR, hRsum, MvPolynomial.coeff_sum] at hdcoef
   obtain ⟨j, hj, hjcoef⟩ := Finset.exists_ne_zero_of_sum_ne_zero hdcoef
   have hdj : d.degree = j := by
-    simpa only [Finsupp.degree_eq_weight_one] using hQhom j hj hjcoef
+    simpa only [Finsupp.degree_eq_weight_one, Pi.one_def] using hQhom j hj hjcoef
   rw [hdj]
   intro hz
   have hQzero : Q j = 0 :=
     (IsFractionRing.injective (MvPolynomial (ℕ × ℕ) F) E)
       (by rw [hQmap j hj, hz, map_zero])
-  exact hjcoef (by rw [hQzero, MvPolynomial.coeff_zero])
+  exact hjcoef (by simp [hQzero])
 
 /-- The degree budget only concerns variations active at the selected Laurent
 coefficient. It bounds every representative of that coefficient. -/

@@ -14,7 +14,7 @@ open Lean Elab Command in
 run_cmd do
   let standard := #[`propext, `Classical.choice, `Quot.sound]
   let env ← getEnv
-  let mut count := 0
+  let mut count : Nat := 0
   for (name, _) in env.constants do
     if (`MakarLimanov).isPrefixOf (privateToUserName name) then
       let axioms ← collectAxioms name

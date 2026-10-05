@@ -7,6 +7,9 @@ Replacing the second derivation by `H + c • D` preserves commutation. Its mixe
 jets are the binomial substitution along each fixed total-order diagonal.
 -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.DirectionDerivations
 
 noncomputable section
@@ -36,7 +39,7 @@ theorem add_smul_restrict [Algebra F E] [IsScalarTower k F E]
 theorem iterate_add_smul (D H : Derivation k E E) (hc : Function.Commute D H)
     (c : k) (j : ℕ) (v : E) :
     (H + c • D : Derivation k E E)^[j] v =
-      ∑ ab ∈ Finset.antidiagonal j,
+      ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal j,
         j.choose ab.1 • ((algebraMap k E c) ^ ab.2 * D^[ab.2] (H^[ab.1] v)) := by
   let d : Module.End k E := D.toLinearMap
   let h : Module.End k E := H.toLinearMap
@@ -54,7 +57,7 @@ theorem iterate_add_smul (D H : Derivation k E E) (hc : Function.Commute D H)
   change j.choose ab.1 • H^[ab.1] (c ^ ab.2 • D^[ab.2] v) = _
   have hl : H^[ab.1] (c ^ ab.2 • D^[ab.2] v) =
       c ^ ab.2 • H^[ab.1] (D^[ab.2] v) := by
-    simpa only [Module.End.pow_apply] using
+    simpa only [Module.End.pow_apply, h, Derivation.coeFn_coe] using
       (h ^ ab.1).map_smul (c ^ ab.2) (D^[ab.2] v)
   rw [hl, (hc.iterate_iterate ab.2 ab.1).symm v]
   congr 1
@@ -64,7 +67,7 @@ theorem iterate_add_smul (D H : Derivation k E E) (hc : Function.Commute D H)
 theorem mixed_add_smul (D H : Derivation k E E) (hc : Function.Commute D H)
     (c : k) (i j : ℕ) (v : E) :
     D^[i] ((H + c • D : Derivation k E E)^[j] v) =
-      ∑ ab ∈ Finset.antidiagonal j,
+      ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal j,
         j.choose ab.1 • ((algebraMap k E c) ^ ab.2 * D^[i + ab.2] (H^[ab.1] v)) := by
   rw [iterate_add_smul D H hc c j v]
   change (⇑D.toLinearMap)^[i] _ = _
@@ -105,7 +108,7 @@ theorem aeval_change [Algebra F E] [IsScalarTower k F E] {N : ℕ}
     rw [mixed_add_smul D H hc c ij.val.1 ij.val.2 v]
     apply Finset.sum_congr rfl
     intro ab hab
-    have hab' := Finset.mem_antidiagonal.mp hab
+    have hab' := Finset.HasAntidiagonal.mem_antidiagonal.mp hab
     have ha : ab.1 ≤ ij.val.1 + ij.val.2 := by omega
     rw [JetDirectionChange.diagonal, dif_pos ha, MvPolynomial.aeval_X]
     dsimp only

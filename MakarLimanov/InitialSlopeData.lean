@@ -11,6 +11,9 @@ enough for the iteration.
 
 noncomputable section
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.InitialSlopeData
 
 open HahnSeries SymbolSeries SymbolSeries.StarSeries
@@ -48,11 +51,11 @@ theorem wordDegree_one_add_le (g : FreeAlgebra K Bool) :
   intro w hw
   have hmap : wordCoefficients (1 + g) = 1 + wordCoefficients g := by
     simp [wordCoefficients]
-  rw [hmap] at hw
+  rw [hmap, MonoidAlgebra.coeff_add] at hw
   rcases Finset.mem_union.mp (Finsupp.support_add hw) with hw | hw
   · have hw1 : w = 1 := by
       by_contra hwne
-      have hcoeff : (1 : MonoidAlgebra K (FreeMonoid Bool)) w ≠ 0 :=
+      have hcoeff : (1 : MonoidAlgebra K (FreeMonoid Bool)).coeff w ≠ 0 :=
         Finsupp.mem_support_iff.mp hw
       exact hcoeff (by simp [MonoidAlgebra.one_def, hwne])
     simp [hw1]
@@ -143,7 +146,7 @@ theorem exists_initial_slopeData
     have hdiv := SlopeDivisibility.refinement_factor_dvd_of_active_coefficient
       (E := E) (0 : Derivation K K K) 0 hc 1 e (by decide) he q 0 0
       (1 + g) (s / 1) hquot.symm i horder hi
-    simpa only [hfactor, RationalSlopeRefinement.refinementFactor] using hdiv
+    simpa only [hfactor, RationalSlopeRefinement.refinementFactor, Nat.cast_one] using hdiv
   · intro i hi
     have hideg : i ≤ wordDegree (1 + g) := by
       by_contra hnot

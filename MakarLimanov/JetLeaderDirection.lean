@@ -24,14 +24,14 @@ theorem coeff_X_mul_pderiv {R σ : Type*} [CommSemiring R]
   induction P using MvPolynomial.induction_on' with
   | monomial e a =>
     rw [X_mul_pderiv_monomial]
-    rw [show coeff d (e i • monomial e a) = e i • coeff d (monomial e a) from
+    rw [show (e i • monomial e a).coeff d = e i • (monomial e a).coeff d from
       (coeffAddMonoidHom d).map_nsmul _ _]
     simp only [coeff_monomial, nsmul_eq_mul]
     split_ifs with h
     · subst e; rfl
     · simp
   | add P Q hP hQ =>
-    simp only [map_add, mul_add, coeff_add, hP, hQ]
+    simp only [map_add, mul_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hP, hQ]
 
 /-- In characteristic zero every variable which occurs has nonzero partial derivative. -/
 theorem pderiv_ne_zero_of_mem_vars {R σ : Type*} [CommRing R] [IsDomain R]
@@ -41,7 +41,7 @@ theorem pderiv_ne_zero_of_mem_vars {R σ : Type*} [CommRing R] [IsDomain R]
   obtain ⟨d, hd, hi⟩ := (MvPolynomial.mem_vars i).mp hi
   intro h
   have heq := coeff_X_mul_pderiv P i d
-  rw [h, mul_zero, coeff_zero] at heq
+  simp only [h, mul_zero, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply] at heq
   exact mul_ne_zero (Nat.cast_ne_zero.mpr (Finsupp.mem_support_iff.mp hi))
     (MvPolynomial.mem_support_iff.mp hd) heq.symm
 

@@ -8,6 +8,9 @@ The code sends the i-th source letter to x y^(i+1). A parser proves that distinc
 remain distinct. The resulting map of free algebras is therefore injective.
 -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov
 
 private def parseWord : List Bool → ℕ × List ℕ

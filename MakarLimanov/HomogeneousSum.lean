@@ -2,6 +2,9 @@ import MakarLimanov.FiniteNewtonInduction
 
 /-! A finite sum with a nonzero positive homogeneous component cannot be a unit. -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.HomogeneousSum
 
 open MvPolynomial
@@ -16,15 +19,20 @@ theorem nonunit_of_nonzero_positive_component
     (hpos : ∃ j ∈ S, 0 < j ∧ P j ≠ 0) :
     ¬ IsUnit (∑ j ∈ S, P j) := by
   obtain ⟨j, hjS, hjpos, hj0⟩ := hpos
-  obtain ⟨d, hd⟩ := Finsupp.support_nonempty_iff.mpr hj0
+  have hjcoeff : (P j).coeff ≠ 0 := by
+    intro h
+    apply hj0
+    apply AddMonoidAlgebra.coeff_injective
+    simpa using h
+  obtain ⟨d, hd⟩ := Finsupp.support_nonempty_iff.mpr hjcoeff
   have hdcoef : (P j).coeff d ≠ 0 := Finsupp.mem_support_iff.mp hd
   have hother : ∀ l ∈ S, l ≠ j → (P l).coeff d = 0 := by
     intro l hl hlj
     by_contra hne
     have hld : d.degree = l := by
-      simpa only [Finsupp.degree_eq_weight_one] using hhom l hl hne
+      simpa only [Finsupp.degree_eq_weight_one, Pi.one_def] using hhom l hl hne
     have hjd : d.degree = j := by
-      simpa only [Finsupp.degree_eq_weight_one] using hhom j hjS hdcoef
+      simpa only [Finsupp.degree_eq_weight_one, Pi.one_def] using hhom j hjS hdcoef
     omega
   have hsumcoef : (∑ l ∈ S, P l).coeff d ≠ 0 := by
     rw [coeff_sum]
@@ -37,16 +45,16 @@ theorem nonunit_of_nonzero_positive_component
   have hsum0 : (∑ l ∈ S, P l) ≠ 0 := by
     intro hzero
     apply hsumcoef
-    rw [hzero, coeff_zero]
+    simp only [hzero, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply]
   intro hunit
   have hdeg : (∑ l ∈ S, P l).totalDegree = 0 :=
     (MvPolynomial.isUnit_iff_totalDegree_of_isReduced.mp hunit).2
   have hhom0 : (∑ l ∈ S, P l).IsHomogeneous 0 :=
     MvPolynomial.isHomogeneous_of_totalDegree_zero σ hdeg
   have hsd : d.degree = 0 := by
-    simpa only [Finsupp.degree_eq_weight_one] using hhom0 hsumcoef
+    simpa only [Finsupp.degree_eq_weight_one, Pi.one_def] using hhom0 hsumcoef
   have hjd : d.degree = j := by
-    simpa only [Finsupp.degree_eq_weight_one] using hhom j hjS hdcoef
+    simpa only [Finsupp.degree_eq_weight_one, Pi.one_def] using hhom j hjS hdcoef
   omega
 
 end

@@ -9,6 +9,9 @@ Finite-word evaluation is compared entrywise with evaluation in the controlled i
 matrix ring. The same input and output boundary strips work for every word of bounded length.
 -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.ControlledMatrix
 
 variable {K : Type*} {P : ℤ × ℤ → Prop}
@@ -22,11 +25,15 @@ theorem list_prod_bound (L : List (Controlled P K)) {R : ℤ}
     (hL : ∀ A ∈ L, HasBound A.entries R) :
     HasBound L.prod.entries ((L.length : ℤ) * R) := by
   induction L with
-  | nil => simpa using (scalar_bound (P := P) (1 : K))
+  | nil =>
+    simp only [List.prod_nil, List.length_nil, Nat.cast_zero, zero_mul]
+    change HasBound (scalarMatrix (P := P) (1 : K)) 0
+    exact scalar_bound (P := P) (1 : K)
   | cons A L ih =>
     have hA := hL A (by simp)
     have htail := ih (fun B hB ↦ hL B (by simp [hB]))
     have hp := product_bound A.entries L.prod.entries hA htail
+    change HasBound (product A.entries L.prod.entries) _
     simpa only [List.prod_cons, List.length_cons, Nat.cast_add, Nat.cast_one, add_mul,
       one_mul, add_comm] using hp
 
@@ -87,7 +94,7 @@ noncomputable def wordCoefficients (f : FreeAlgebra K σ) : MonoidAlgebra K (Fre
 /-- Evaluation is the finite sum of coefficients times ordered products of letters. -/
 theorem lift_eq_word_sum {A : Type*} [Ring A] [Algebra K A]
     (f : FreeAlgebra K σ) (X : σ → A) :
-    FreeAlgebra.lift K X f = (wordCoefficients f).sum
+    FreeAlgebra.lift K X f = (wordCoefficients f).coeff.sum
       (fun w c ↦ c • (w.toList.map X).prod) := by
   have hh : FreeAlgebra.lift K X =
       (MonoidAlgebra.lift K A (FreeMonoid σ) (FreeMonoid.lift X)).comp
@@ -113,11 +120,11 @@ noncomputable def compressLinear (e : ι ↪ Index P) :
 
 /-- Every word occurring in f has the specified length bound. -/
 def DegreeBound (f : FreeAlgebra K σ) (D : ℕ) : Prop :=
-  ∀ w ∈ (wordCoefficients f).support, w.toList.length ≤ D
+  ∀ w ∈ (wordCoefficients f).coeff.support, w.toList.length ≤ D
 
 /-- Maximum word length in the canonical support, with zero assigned degree zero. -/
 noncomputable def wordDegree (f : FreeAlgebra K σ) : ℕ :=
-  (wordCoefficients f).support.sup (fun w ↦ w.toList.length)
+  (wordCoefficients f).coeff.support.sup (fun w ↦ w.toList.length)
 
 theorem degreeBound_wordDegree (f : FreeAlgebra K σ) : DegreeBound f (wordDegree f) := by
   intro w hw
@@ -146,7 +153,7 @@ theorem polynomial_compress_entry (e : ι ↪ Index P) {N R : ℤ} (hR : 0 ≤ R
   have heq := list_prod_compress_entry e hR hsquare (w.toList.map X)
     (by intro A hA; obtain ⟨s, _, rfl⟩ := List.mem_map.mp hA; exact hX s)
     i j (by omega) (by omega)
-  change (wordCoefficients f) w * compress e (w.toList.map X).prod.entries i j = _
+  change (wordCoefficients f).coeff w * compress e (w.toList.map X).prod.entries i j = _
   rw [heq]
   simp only [List.map_map, Function.comp_def, smul_eq_mul]
 
@@ -251,7 +258,6 @@ theorem boundary_card_le (e : ι ↪ Index P) (N : ℤ) (B S : ℕ)
   have hi := Finset.card_union_le
     (Finset.univ.filter fun i ↦ N - (B : ℤ) ≤ (e i).val.1)
     (Finset.univ.filter fun i ↦ (e i).val.2 < (B : ℤ))
-  dsimp only at hl₁ hu₁ hl₂ hu₂
   nlinarith
 
 end Counting

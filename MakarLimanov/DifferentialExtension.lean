@@ -34,7 +34,7 @@ lemma derivation_eq_zero_of_restrict_eq_zero (d : Derivation k E E)
   ext x
   have hx := congrArg (fun f : KaehlerDifferential K E →ₗ[E] E ↦
     f (KaehlerDifferential.D K E x)) hz
-  simpa using hx
+  simpa [dK] using hx
 omit [Algebra k K] [IsScalarTower k K E] in
 lemma derivation_ext_of_separable (d₁ d₂ : Derivation k E E)
     (h : ∀ x : K, d₁ (algebraMap K E x) = d₂ (algebraMap K E x)) : d₁ = d₂ := by

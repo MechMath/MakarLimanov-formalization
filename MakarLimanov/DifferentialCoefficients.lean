@@ -126,7 +126,7 @@ theorem variation (p : ℕ) (hp : 0 < p) (δ η : Derivation k F F)
   | mul f g hf hg =>
     intro m
     rw [Variations.variation_mul]
-    change (∑ ij ∈ Finset.antidiagonal n,
+    change (∑ ij ∈ Finset.HasAntidiagonal.antidiagonal n,
       SymbolSeries.starProduct p hp δ η (toSeries (Variations.variation f x z v ij.1))
         (toSeries (Variations.variation g x z v ij.2))).coeff m ∈ S
     simp only [coeff_sum]

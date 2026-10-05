@@ -3,11 +3,15 @@ import MakarLimanov.SymbolSeries
 
 /-! The double Taylor embedding and the coordinate differential operators of §6. -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.TaylorCoordinates
 
 open TaylorSeries HahnSeries Finset
 
 attribute [local instance 2000] HahnSeries.instAlgebra
+attribute [local instance 2100] MvPowerSeries.instAlgebra
 
 variable {k F : Type*} [Field k] [Field F] [Algebra k F]
 
@@ -16,27 +20,27 @@ abbrev BiSeries (F : Type*) := PowerSeries (PowerSeries F)
 
 /-- Differentiation in the outer variable. -/
 noncomputable def partialT : BiSeries F →+ BiSeries F :=
-  { toFun := PowerSeries.derivativeFun
-    map_zero' := by ext i j; simp [PowerSeries.coeff_derivativeFun]
-    map_add' := PowerSeries.derivativeFun_add }
+  { toFun := PowerSeries.derivative
+    map_zero' := by ext i j; simp [PowerSeries.coeff_derivative]
+    map_add' := (PowerSeries.derivative (R := PowerSeries F)).map_add }
 
 /-- Differentiation in the inner variable, applied to every outer coefficient. -/
 noncomputable def partialW : BiSeries F →+ BiSeries F where
-  toFun x := PowerSeries.mk (fun i ↦ PowerSeries.derivative F (PowerSeries.coeff i x))
+  toFun x := PowerSeries.mk (fun i ↦ PowerSeries.derivative (PowerSeries.coeff i x))
   map_zero' := by ext i j; simp
   map_add' x y := by ext i j; simp
 
 @[simp] lemma coeff_partialT (x : BiSeries F) (i : ℕ) :
     PowerSeries.coeff i (partialT x) = PowerSeries.coeff (i + 1) x * (i + 1) :=
-  PowerSeries.coeff_derivativeFun x i
+  PowerSeries.coeff_derivative x i
 
 @[simp] lemma coeff_partialW (x : BiSeries F) (i : ℕ) :
-    PowerSeries.coeff i (partialW x) = PowerSeries.derivative F (PowerSeries.coeff i x) :=
+    PowerSeries.coeff i (partialW x) = PowerSeries.derivative (PowerSeries.coeff i x) :=
   by simp only [partialW, AddMonoidHom.coe_mk, ZeroHom.coe_mk, PowerSeries.coeff_mk]
 
 lemma partialT_mul (x y : BiSeries F) :
     partialT (x * y) = x * partialT y + y * partialT x := by
-  simpa only [smul_eq_mul] using PowerSeries.derivativeFun_mul x y
+  simpa only [partialT, AddMonoidHom.coe_mk, ZeroHom.coe_mk, smul_eq_mul] using (PowerSeries.derivative (R := PowerSeries F)).leibniz x y
 
 lemma partialW_mul (x y : BiSeries F) :
     partialW (x * y) = x * partialW y + y * partialW x := by
@@ -46,7 +50,7 @@ lemma partialW_mul (x y : BiSeries F) :
     smul_eq_mul, map_add, Finset.sum_add_distrib]
   congr 1
   exact Finset.Nat.sum_antidiagonal_swap (f := fun ab ↦
-    PowerSeries.coeff ab.1 y * PowerSeries.derivative F (PowerSeries.coeff ab.2 x))
+    PowerSeries.coeff ab.1 y * PowerSeries.derivative (PowerSeries.coeff ab.2 x))
 
 lemma partials_commute : Function.Commute (partialT (F := F)) partialW := by
   intro x
@@ -61,10 +65,10 @@ lemma partialT_doubleTaylor (δ η : Derivation k F F) (a : F) :
     partialT (doubleTaylor δ η a) = doubleTaylor δ η (δ a) := by
   apply PowerSeries.ext
   intro i
-  change PowerSeries.coeff i (PowerSeries.derivativeFun
+  change PowerSeries.coeff i (PowerSeries.derivative
     (PowerSeries.map (taylor η).toRingHom (taylor δ a))) =
     PowerSeries.coeff i (PowerSeries.map (taylor η).toRingHom (taylor δ (δ a)))
-  rw [PowerSeries.coeff_derivativeFun, PowerSeries.coeff_map, ← derivative_taylor,
+  rw [PowerSeries.coeff_derivative, PowerSeries.coeff_map, ← derivative_taylor,
     PowerSeries.coeff_map, PowerSeries.coeff_derivative]
   simp only [map_mul, map_add, map_natCast, map_one]
 

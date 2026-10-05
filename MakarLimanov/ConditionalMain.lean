@@ -56,6 +56,7 @@ theorem normalizedBinaryClaim_of_audited_assumptions : NormalizedBinaryClaim K :
       · exact S.symbol_bound
     have hX : ∀ i, HasBound (X i).entries (S.p * A : ℤ) := by
       intro i
+      change HasBound (ρ (U (finTwoEquiv i))).entries (S.p * A : ℤ)
       simpa only [neg_neg] using hρb (U (finTwoEquiv i)) _ (hUb (finTwoEquiv i))
     have heval : FreeAlgebra.lift S.F X (changeCoefficients (L := S.F) f) =
         ρ (evaluateAt (hp := S.hp) (h := S.commute) S.Z (1 + g)) := by

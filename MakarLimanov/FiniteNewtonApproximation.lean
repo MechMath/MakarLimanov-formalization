@@ -116,7 +116,8 @@ theorem rhoRun_zero : rhoRun R 0 = R.rho 0 R.initial := by
   rfl
 
 theorem rhoRun_nonneg : 0 ≤ rhoRun R 0 := by
-  simpa [rhoRun] using R.initial_nonneg
+  rw [rhoRun_zero]
+  exact R.initial_nonneg
 
 theorem pRun_pos (i : ℕ) : 0 < pRun R i := by
   exact R.positive_p i (run R i).val (run R i).property

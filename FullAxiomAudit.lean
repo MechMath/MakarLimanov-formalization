@@ -6,7 +6,7 @@ import Lean.Util.CollectAxioms
 open Lean Elab Command in
 run_cmd do
   let env ← getEnv
-  let mut count := 0
+  let mut count : Nat := 0
   for (name, _) in env.constants do
     let publicName := privateToUserName name
     if (`MakarLimanov).isPrefixOf publicName then

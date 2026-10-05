@@ -6,6 +6,9 @@ import MakarLimanov.JetLeaderDirection
 Unlike the eigenvector twist, this substitution preserves total differential order.
 -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.JetDirectionChange
 
 open MvPolynomial NewtonCKRoot JetTransform
@@ -112,7 +115,7 @@ theorem transform_delta {R : Type*} [CommRing R] (c : R) (n : ℕ) :
   · intro ab hab hne
     have ha : ab.1 ≠ 0 := by
       intro ha
-      have hb := Finset.mem_antidiagonal.mp hab
+      have hb := Finset.HasAntidiagonal.mem_antidiagonal.mp hab
       apply hne
       exact Prod.ext ha (by omega)
     simp [ha]
@@ -132,6 +135,7 @@ theorem pderiv_leader_change_X (c : F) (ij : Triangle N) :
     rw [transform_eq_sum]
     simp
 
+set_option maxHeartbeats 800000 in
 /-- Chain rule for the pure highest derivative, expressed on the original jet coordinates. -/
 theorem pderiv_leader_change (c : F) (P : MvPolynomial (Triangle N) F) :
     pderiv (leader N) (change c P) = change c

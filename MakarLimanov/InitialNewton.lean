@@ -20,11 +20,11 @@ theorem lift_zero_true_of_binaryAbelianize_zero
   rw [ControlledMatrix.lift_eq_word_sum]
   simp only [toSeries]
   calc
-    (ControlledMatrix.wordCoefficients g).sum
+    (ControlledMatrix.wordCoefficients g).coeff.sum
         (fun w c ↦ c •
           (List.map (fun b ↦ ofSeries (if b then 0 else distinguishedSymbol p))
             w.toList).prod) =
-      (ControlledMatrix.wordCoefficients g).sum (fun _ _ ↦ 0) := by
+      (ControlledMatrix.wordCoefficients g).coeff.sum (fun _ _ ↦ 0) := by
       apply Finsupp.sum_congr
       intro w hw
       by_cases ht : true ∈ w.toList
@@ -43,8 +43,8 @@ theorem lift_zero_true_of_binaryAbelianize_zero
           | true => exact False.elim (ht hb)
         have hw : w = FreeMonoid.ofList (List.replicate w.toList.length false) :=
           FreeMonoid.toList.injective hfalse
-        have hc0 : (ControlledMatrix.wordCoefficients g) w = 0 := by
-          change (ControlledMatrix.wordCoefficients g) w = 0
+        have hc0 : (ControlledMatrix.wordCoefficients g).coeff w = 0 := by
+          change (ControlledMatrix.wordCoefficients g).coeff w = 0
           rw [hw]
           rw [← BinarySupport.pure_coefficient g false w.toList.length, hg]
           simp

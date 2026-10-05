@@ -145,7 +145,7 @@ theorem exists_exact_factorization (Ψ : MvPolynomial (ℕ × ℕ) F)
   have hfinite : FiniteMultiplicity P Ψ := .of_not_isUnit hP.not_isUnit hΨ0
   obtain ⟨Q, heq, hQ⟩ := hfinite.exists_eq_pow_mul_and_not_dvd
   have hm : 0 < multiplicity P Ψ :=
-    Nat.pos_of_ne_zero (multiplicity_ne_zero.mpr hPΨ)
+    multiplicity_pos_of_dvd hPΨ hfinite
   refine ⟨P, Q, multiplicity P Ψ, hP, hm, heq, hQ, horder, ?_⟩
   rw [horder]
   apply differentialOrder_le_of_dvd _ hΨ0

@@ -8,6 +8,9 @@ These formulas identify the coordinate differential operators with the
 commutators used in the concrete normal-order matrix construction.
 -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.TaylorCoordinates
 
 open HahnSeries
@@ -52,7 +55,7 @@ lemma coordinate_mul_smul (x y : LaurentSeries (BiSeries F)) (c : F) :
   ring
 
 lemma derivative_monomial_succ (n : ℕ) (c : F) :
-    PowerSeries.derivative F (PowerSeries.monomial (n + 1) c) =
+    PowerSeries.derivative (PowerSeries.monomial (n + 1) c) =
       PowerSeries.monomial n (c * (n + 1)) := by
   ext m
   rw [PowerSeries.coeff_derivative]
@@ -64,7 +67,7 @@ lemma derivative_monomial_succ (n : ℕ) (c : F) :
 
 lemma partialW_monomial (i : ℕ) (x : PowerSeries F) :
     partialW (PowerSeries.monomial i x) =
-      PowerSeries.monomial i (PowerSeries.derivative F x) := by
+      PowerSeries.monomial i (PowerSeries.derivative x) := by
   ext n
   by_cases hn : n = i <;> simp [PowerSeries.coeff_monomial, hn]
 
@@ -136,7 +139,7 @@ lemma coordinateT_iterate_monomial_of_lt (k j : ℕ) (r : ℤ) (c : F)
   simp
 
 lemma derivative_monomial (n : ℕ) (c : F) :
-    PowerSeries.derivative F (PowerSeries.monomial n c) =
+    PowerSeries.derivative (PowerSeries.monomial n c) =
       PowerSeries.monomial (n - 1) (c * n) := by
   cases n with
   | zero => simp [PowerSeries.monomial_zero_eq_C_apply]

@@ -8,6 +8,9 @@ multiplication has a uniform finite coefficient window once both input lower
 bounds are fixed.
 -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.MatrixRealization
 
 open ControlledMatrix Lattice TaylorCoordinates HahnSeries
@@ -144,8 +147,8 @@ variable {F : Type*} [Field F]
 lemma sourceCoeff_mul_Icc {b c : ℤ} {x y : LaurentSeries (BiSeries F)}
     (hx : CoordinateBound b x) (hy : CoordinateBound c y) (i j : ℕ) (r : ℤ) :
     sourceCoeff (x * y) ((i, j), r) =
-      ∑ m ∈ Finset.Icc b (-r - c), ∑ ab ∈ Finset.antidiagonal i,
-        ∑ uv ∈ Finset.antidiagonal j,
+      ∑ m ∈ Finset.Icc b (-r - c), ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal i,
+        ∑ uv ∈ Finset.HasAntidiagonal.antidiagonal j,
           sourceCoeff x ((ab.1, uv.1), -m) * sourceCoeff y ((ab.2, uv.2), r + m) := by
   simp only [sourceCoeff, coeff_mul_Icc hx hy, map_sum, PowerSeries.coeff_mul,
     neg_neg]
@@ -170,7 +173,7 @@ theorem exists_mul_coefficient_window (b c : ℤ) (q : Source) :
   classical
   rcases q with ⟨⟨i, j⟩, r⟩
   let K := (Finset.Icc b (-r - c)) ×ˢ
-    ((Finset.antidiagonal i) ×ˢ (Finset.antidiagonal j))
+    ((Finset.HasAntidiagonal.antidiagonal i) ×ˢ (Finset.HasAntidiagonal.antidiagonal j))
   let s := K.image (fun z ↦ ((z.2.1.1, z.2.2.1), -z.1))
   let t := K.image (fun z ↦ ((z.2.1.2, z.2.2.2), r + z.1))
   refine ⟨s, t, ?_⟩

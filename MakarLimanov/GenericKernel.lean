@@ -20,7 +20,7 @@ open Polynomial
 universe u v
 
 variable {R : Type u} {K : Type v} [CommRing R] [IsDomain R]
-  [Nonempty (NormalizedGCDMonoid R)] [Field K] [Algebra R K] [IsFractionRing R K]
+  [IsGCDMonoid R] [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-- Divisibility by a primitive polynomial contracts from a fraction field for arbitrary Q. -/
 theorem fraction_dvd_iff {P Q : R[X]} (hP : P.IsPrimitive) :

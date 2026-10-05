@@ -11,7 +11,7 @@ variable {k F : Type*} [CommRing k] [Field F] [CharZero F] [Algebra k F]
 
 omit [CharZero F] in
 lemma iterate_mul (D : Derivation k F F) (n : ℕ) (x y : F) :
-    D^[n] (x * y) = ∑ ab ∈ Finset.antidiagonal n,
+    D^[n] (x * y) = ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal n,
       n.choose ab.1 • (D^[ab.1] x * D^[ab.2] y) := by
   induction n with
   | zero => simp
@@ -22,7 +22,7 @@ lemma iterate_mul (D : Derivation k F F) (n : ℕ) (x y : F) :
     congr 1
     apply sum_congr rfl
     intro ab hab
-    rw [n.choose_symm_of_eq_add (Finset.mem_antidiagonal.mp hab).symm]
+    rw [n.choose_symm_of_eq_add (Finset.HasAntidiagonal.mem_antidiagonal.mp hab).symm]
     ring
 
 lemma factorial_coefficient (a b : ℕ) :
@@ -51,7 +51,7 @@ lemma series_mul (D : Derivation k F F) (a b : F) :
   rw [coeff_series, iterate_mul, PowerSeries.coeff_mul, Finset.mul_sum]
   apply Finset.sum_congr rfl
   rintro ⟨i,j⟩ hij
-  have hn := Finset.mem_antidiagonal.mp hij
+  have hn := Finset.HasAntidiagonal.mem_antidiagonal.mp hij
   simp only [coeff_series, nsmul_eq_mul]
   have hf : (n.factorial : F)⁻¹ * (n.choose i : F) =
       (i.factorial : F)⁻¹ * (j.factorial : F)⁻¹ := by
@@ -108,7 +108,7 @@ lemma taylor_injective (D : Derivation k F F) : Function.Injective (taylor D) :=
 
 /-- Formal differentiation of the Taylor series implements the original derivation. -/
 lemma derivative_taylor (D : Derivation k F F) (a : F) :
-    PowerSeries.derivative F (taylor D a) = taylor D (D a) := by
+    PowerSeries.derivative (taylor D a) = taylor D (D a) := by
   ext n
   rw [PowerSeries.coeff_derivative]
   rw [taylor_apply, taylor_apply, coeff_series, coeff_series]

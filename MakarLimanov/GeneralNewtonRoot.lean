@@ -2,6 +2,7 @@ import MakarLimanov.JetDirectionChange
 import MakarLimanov.LeaderDegree
 import MakarLimanov.ZeroOrderNewtonRoot
 import MakarLimanov.DirectionDerivations
+import Mathlib.Algebra.CharZero.Infinite
 
 /-! Choosing a noncharacteristic direction for every finite irreducible jet equation. -/
 

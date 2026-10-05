@@ -19,6 +19,9 @@ open HahnSeries Finset
 -- Use the coefficient algebra structure, not the distinct power-series tower instance.
 attribute [local instance 2000] HahnSeries.instAlgebra
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.SymbolSeries
 
 variable {k F : Type*} [Field k] [Field F] [Algebra k F]
@@ -247,6 +250,7 @@ theorem starTerm_lowerBound (p : ℕ) (δ η : Derivation k F F)
     (j : ℕ) : LowerBound (b + c + (p : ℤ) * j) (starTerm p δ η x y j) := by
   have h := ((hx.deltaOperator_iterate p η j).mul
     (hy.coefficientDerivation_iterate δ j)).smul (j.factorial : F)⁻¹
+  change LowerBound _ (_ • _)
   convert h using 1
   ring
 
@@ -561,7 +565,7 @@ theorem monomial_twist_killed (p : ℕ) (δ η : Derivation k F F) (n : ℤ) (a 
 /-- The finite iterated Leibniz expansion needed in the star-associativity calculation. -/
 theorem derivation_iterate_mul (D : Derivation k (LaurentSeries F) (LaurentSeries F))
     (j : ℕ) (x y : LaurentSeries F) :
-    D^[j] (x * y) = ∑ ab ∈ Finset.antidiagonal j,
+    D^[j] (x * y) = ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal j,
       j.choose ab.1 • (D^[ab.1] x * D^[ab.2] y) := by
   induction j with
   | zero => simp
@@ -573,7 +577,7 @@ theorem derivation_iterate_mul (D : Derivation k (LaurentSeries F) (LaurentSerie
     congr 1
     apply sum_congr rfl
     intro ab hab
-    rw [j.choose_symm_of_eq_add (Finset.mem_antidiagonal.mp hab).symm]
+    rw [j.choose_symm_of_eq_add (Finset.HasAntidiagonal.mem_antidiagonal.mp hab).symm]
     ring
 
 section SummableOperators
@@ -627,7 +631,7 @@ theorem deltaFamily_hsum (p : ℕ) (η : Derivation k F F) (s : SummableFamily �
   let L : F →ₗ[k] F := η.toLinearMap -
     ((p : F)⁻¹ * ((n - p : ℤ) : F)) • LinearMap.id
   simpa only [SummableFamily.coeff_hsum, deltaFamily_apply, deltaOperator_coeff,
-    L, LinearMap.sub_apply, LinearMap.smul_apply, LinearMap.id_apply, smul_eq_mul,
+    L, Derivation.coeFn_coe, LinearMap.sub_apply, LinearMap.smul_apply, LinearMap.id_apply, smul_eq_mul,
     mul_assoc] using (map_finsum L (s.finite_co_support (n - p))).symm
 
 theorem deltaFamily_iterate_apply (p : ℕ) (η : Derivation k F F)
@@ -698,6 +702,7 @@ theorem associativityTerm_lowerBound (p : ℕ) (δ η : Derivation k F F)
     ((hy.coefficientDerivation_iterate δ abc.1).deltaOperator_iterate p η abc.2.2)).mul
       (hz.coefficientDerivation_iterate δ (abc.2.1 + abc.2.2))).smul
         ((abc.1.factorial : F)⁻¹ * (abc.2.1.factorial : F)⁻¹ * (abc.2.2.factorial : F)⁻¹)
+  change LowerBound _ (_ • _)
   convert h using 1
   push_cast
   ring
@@ -749,14 +754,14 @@ theorem coefficientDerivation_iterate_smul_of_eq_zero (δ : Derivation k F F) (a
 theorem starTerm_starTerm_left [CharZero F] (p : ℕ) (δ η : Derivation k F F)
     (x y z : LaurentSeries F) (i j : ℕ) :
     starTerm p δ η (starTerm p δ η x y i) z j =
-      ∑ ab ∈ Finset.antidiagonal j, associativityTerm p δ η x y z (i, ab.1, ab.2) := by
+      ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal j, associativityTerm p δ η x y z (i, ab.1, ab.2) := by
   have hi : η ((i.factorial : F)⁻¹) = 0 := by rw [Derivation.leibniz_inv]; simp
   simp only [starTerm, deltaOperator_iterate_smul_of_eq_zero p η _ hi,
     derivation_iterate_mul, smul_sum, sum_mul]
   apply sum_congr rfl
   intro ab hab
   obtain ⟨a, b⟩ := ab
-  have hab' : a + b = j := Finset.mem_antidiagonal.mp hab
+  have hab' : a + b = j := Finset.HasAntidiagonal.mem_antidiagonal.mp hab
   subst j
   simp only [associativityTerm, ← Nat.cast_smul_eq_nsmul F, smul_mul_assoc, smul_smul,
     ← Function.iterate_add_apply, Nat.add_comm a i]
@@ -770,14 +775,14 @@ theorem starTerm_starTerm_left [CharZero F] (p : ℕ) (δ η : Derivation k F F)
 theorem starTerm_starTerm_right [CharZero F] (p : ℕ) (δ η : Derivation k F F)
     (h : Function.Commute δ η) (x y z : LaurentSeries F) (i j : ℕ) :
     starTerm p δ η x (starTerm p δ η y z j) i =
-      ∑ ab ∈ Finset.antidiagonal i, associativityTerm p δ η x y z (ab.1, ab.2, j) := by
+      ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal i, associativityTerm p δ η x y z (ab.1, ab.2, j) := by
   have hj : δ ((j.factorial : F)⁻¹) = 0 := by rw [Derivation.leibniz_inv]; simp
   simp only [starTerm, coefficientDerivation_iterate_smul_of_eq_zero δ _ hj,
     derivation_iterate_mul, smul_sum, mul_sum]
   apply sum_congr rfl
   intro ab hab
   obtain ⟨a, b⟩ := ab
-  have hab' : a + b = i := Finset.mem_antidiagonal.mp hab
+  have hab' : a + b = i := Finset.HasAntidiagonal.mem_antidiagonal.mp hab
   subst i
   have hcomm := ((coefficientDerivation_delta_commute p δ η h).iterate_right j).iterate_left a
   simp only [associativityTerm, ← Nat.cast_smul_eq_nsmul F, mul_smul_comm, smul_smul,
@@ -838,25 +843,25 @@ theorem starTerm_hsum_right_coeff (p : ℕ) (δ η : Derivation k F F)
 end SummableTerm
 
 private theorem finsum_antidiagonal (f : ℕ × ℕ → F) (hf : Function.HasFiniteSupport f) :
-    (∑ᶠ n, ∑ ab ∈ Finset.antidiagonal n, f ab) = ∑ᶠ ab, f ab := by
+    (∑ᶠ n, ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal n, f ab) = ∑ᶠ ab, f ab := by
   classical
   let s := hf.toFinset
   have hs (ab : ℕ × ℕ) : ab ∈ s ↔ f ab ≠ 0 := by
     simp [s, Function.mem_support]
-  have hinner (n : ℕ) : (∑ ab ∈ Finset.antidiagonal n, f ab) =
+  have hinner (n : ℕ) : (∑ ab ∈ Finset.HasAntidiagonal.antidiagonal n, f ab) =
       ∑ ab ∈ s.filter (fun ab ↦ ab.1 + ab.2 = n), f ab := by
     symm
     apply sum_subset
     · intro ab hab
-      exact Finset.mem_antidiagonal.mpr (mem_filter.mp hab).2
+      exact Finset.HasAntidiagonal.mem_antidiagonal.mpr (mem_filter.mp hab).2
     · intro ab hab hnot
       by_contra! hnonzero
-      exact hnot (mem_filter.mpr ⟨(hs ab).mpr hnonzero, Finset.mem_antidiagonal.mp hab⟩)
-  have houter : Function.support (fun n ↦ ∑ ab ∈ Finset.antidiagonal n, f ab) ⊆
+      exact hnot (mem_filter.mpr ⟨(hs ab).mpr hnonzero, Finset.HasAntidiagonal.mem_antidiagonal.mp hab⟩)
+  have houter : Function.support (fun n ↦ ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal n, f ab) ⊆
       ↑(s.image (fun ab ↦ ab.1 + ab.2)) := by
     intro n hn
     obtain ⟨ab, hab, hnz⟩ := exists_ne_zero_of_sum_ne_zero hn
-    exact mem_image.mpr ⟨ab, (hs ab).mpr hnz, Finset.mem_antidiagonal.mp hab⟩
+    exact mem_image.mpr ⟨ab, (hs ab).mpr hnz, Finset.HasAntidiagonal.mem_antidiagonal.mp hab⟩
   rw [finsum_eq_sum_of_support_subset _ houter, finsum_eq_sum _ hf]
   simp only [hinner]
   exact sum_fiberwise_of_maps_to (fun ab hab ↦ mem_image_of_mem _ hab) f
@@ -871,17 +876,17 @@ private theorem finsum_pair_comm (f : ℕ × ℕ → F) (hf : Function.HasFinite
 
 private theorem finsum_triple_group (f : ℕ × ℕ × ℕ → F)
     (hf : Function.HasFiniteSupport f) :
-    (∑ᶠ n, ∑ᶠ i, ∑ ab ∈ Finset.antidiagonal n, f (i, ab.1, ab.2)) =
+    (∑ᶠ n, ∑ᶠ i, ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal n, f (i, ab.1, ab.2)) =
       ∑ᶠ abc, f abc := by
   have hg : Function.HasFiniteSupport
-      (fun ni : ℕ × ℕ ↦ ∑ ab ∈ Finset.antidiagonal ni.1, f (ni.2, ab.1, ab.2)) := by
+      (fun ni : ℕ × ℕ ↦ ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal ni.1, f (ni.2, ab.1, ab.2)) := by
     refine (hf.image (fun abc ↦ (abc.2.1 + abc.2.2, abc.1))).subset ?_
     intro ni hni
     obtain ⟨ab, hab, hnz⟩ := exists_ne_zero_of_sum_ne_zero hni
     refine ⟨(ni.2, ab.1, ab.2), hnz, ?_⟩
-    simp [Finset.mem_antidiagonal.mp hab]
+    simp [Finset.HasAntidiagonal.mem_antidiagonal.mp hab]
   rw [finsum_pair_comm _ hg]
-  have heq (i : ℕ) : (∑ᶠ n, ∑ ab ∈ Finset.antidiagonal n, f (i, ab.1, ab.2)) =
+  have heq (i : ℕ) : (∑ᶠ n, ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal n, f (i, ab.1, ab.2)) =
       ∑ᶠ ab : ℕ × ℕ, f (i, ab.1, ab.2) := by
     apply finsum_antidiagonal
     exact hf.fun_comp_of_injective (fun a b hab ↦ (Prod.mk.inj hab).2)
@@ -905,7 +910,7 @@ theorem starProduct_assoc [CharZero F] (p : ℕ) (hp : 0 < p)
         apply finsum_congr
         intro j
         exact starTerm_hsum_left_coeff p δ η (starFamily p hp δ η x y) z j n
-      _ = ∑ᶠ j, ∑ᶠ i, ∑ ab ∈ Finset.antidiagonal j, f (i, ab.1, ab.2) := by
+      _ = ∑ᶠ j, ∑ᶠ i, ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal j, f (i, ab.1, ab.2) := by
         apply finsum_congr
         intro j
         apply finsum_congr
@@ -926,7 +931,7 @@ theorem starProduct_assoc [CharZero F] (p : ℕ) (hp : 0 < p)
       apply finsum_congr
       intro i
       exact starTerm_hsum_right_coeff p δ η (starFamily p hp δ η y z) x i n
-    _ = ∑ᶠ i, ∑ᶠ j, ∑ ab ∈ Finset.antidiagonal i, f (e (j, ab.1, ab.2)) := by
+    _ = ∑ᶠ i, ∑ᶠ j, ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal i, f (e (j, ab.1, ab.2)) := by
       apply finsum_congr
       intro i
       apply finsum_congr
@@ -989,7 +994,6 @@ def constants : k →+* StarSeries p hp δ η h where
     change (single 0 (algebraMap k F (a + b)) : LaurentSeries F) =
       single 0 (algebraMap k F a) + single 0 (algebraMap k F b)
     simp
-    rfl
   map_mul' a b := by
     change (single 0 (algebraMap k F (a * b)) : LaurentSeries F) =
       starProduct p hp δ η (single 0 (algebraMap k F a)) (single 0 (algebraMap k F b))
@@ -1201,7 +1205,7 @@ theorem refineLattice_injective (e : ℕ) (he : 0 < e) :
     refineLattice (F := F) e he 0 = 0 := HahnSeries.embDomain_zero
 
 @[simp] theorem refineLattice_one (e : ℕ) (he : 0 < e) :
-    refineLattice (F := F) e he 1 = 1 := HahnSeries.embDomain_one _ (by simp [latticeIndex])
+    refineLattice (F := F) e he 1 = 1 := HahnSeries.embDomain_one _ (by change (e : ℤ) * 0 = 0; simp)
 
 @[simp] theorem refineLattice_add (e : ℕ) (he : 0 < e) (x y : LaurentSeries F) :
     refineLattice e he (x + y) = refineLattice e he x + refineLattice e he y :=

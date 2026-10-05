@@ -8,6 +8,9 @@ The auxiliary polynomial variable is central, although its coefficient algebra n
 commutative. Its coefficients are the actual variations in the second free generator.
 -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.Variations
 
 open Polynomial
@@ -53,7 +56,7 @@ theorem eval_expansion (f : FreeAlgebra k Bool) (x z v t : A)
 
 /-- Ordered convolution, with no commutativity assumption on the coefficient algebra. -/
 theorem variation_mul (f g : FreeAlgebra k Bool) (x z v : A) (n : ℕ) :
-    variation (f * g) x z v n = ∑ ij ∈ Finset.antidiagonal n,
+    variation (f * g) x z v n = ∑ ij ∈ Finset.HasAntidiagonal.antidiagonal n,
       variation f x z v ij.1 * variation g x z v ij.2 := by
   simp [variation, coeff_mul]
 
@@ -124,7 +127,7 @@ private theorem word_expansion_degree (w : List Bool) (x z v : A) :
 
 /-- A bound on the number of second-generator letters bounds the number of variations. -/
 theorem expansion_degree_le (f : FreeAlgebra k Bool) (x z v : A) (M : ℕ)
-    (hM : ∀ w ∈ (ControlledMatrix.wordCoefficients f).support, w.toList.count true ≤ M) :
+    (hM : ∀ w ∈ (ControlledMatrix.wordCoefficients f).coeff.support, w.toList.count true ≤ M) :
     (expansion x z v f).natDegree ≤ M := by
   classical
   rw [expansion, ControlledMatrix.lift_eq_word_sum]
@@ -134,7 +137,7 @@ theorem expansion_degree_le (f : FreeAlgebra k Bool) (x z v : A) (M : ℕ)
 
 /-- No formal coefficient beyond the actual word-count bound can survive evaluation. -/
 theorem variation_eq_zero_of_count_lt (f : FreeAlgebra k Bool) (x z v : A) (M n : ℕ)
-    (hM : ∀ w ∈ (ControlledMatrix.wordCoefficients f).support, w.toList.count true ≤ M)
+    (hM : ∀ w ∈ (ControlledMatrix.wordCoefficients f).coeff.support, w.toList.count true ≤ M)
     (hn : M < n) : variation f x z v n = 0 :=
   coeff_eq_zero_of_natDegree_lt ((expansion_degree_le f x z v M hM).trans_lt hn)
 

@@ -59,7 +59,7 @@ theorem map_transform {S : Type*} [CommRing S] (φ : R →+* S)
 
 /-- The recurrence equals the binomial sum appearing in the jet substitution formula. -/
 theorem transform_eq_sum (s : R) (a : ℕ → R) (n : ℕ) :
-    transform s a n = ∑ ij ∈ Finset.antidiagonal n, n.choose ij.1 • (s ^ ij.2 * a ij.1) := by
+    transform s a n = ∑ ij ∈ Finset.HasAntidiagonal.antidiagonal n, n.choose ij.1 • (s ^ ij.2 * a ij.1) := by
   induction n generalizing a with
   | zero => simp [transform]
   | succ n ih =>
@@ -72,7 +72,7 @@ theorem transform_eq_sum (s : R) (a : ℕ → R) (n : ℕ) :
       simp [pow_succ, mul_assoc, mul_left_comm, mul_comm]
     · apply Finset.sum_congr rfl
       rintro ⟨i,j⟩ hij
-      rw [Nat.choose_symm_of_eq_add (Finset.mem_antidiagonal.mp hij).symm]
+      rw [Nat.choose_symm_of_eq_add (Finset.HasAntidiagonal.mem_antidiagonal.mp hij).symm]
 
 end Transform
 
@@ -112,7 +112,7 @@ theorem iterate_eigenvector_mul (H : Derivation k F F) (e s w : F)
 theorem mixed_eigenvector_mul (D H : Derivation k F F) (e s w : F)
     (heD : D e = 0) (heH : H e = s * e) (hsD : D s = 0) (hsH : H s = 0)
     (i j : ℕ) :
-    D^[i] (H^[j] (e * w)) = e * ∑ ab ∈ Finset.antidiagonal j,
+    D^[i] (H^[j] (e * w)) = e * ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal j,
       j.choose ab.1 • (s ^ ab.2 * D^[i] (H^[ab.1] w)) := by
   rw [iterate_eigenvector_mul H e s w heH hsH,
     TaylorSeries.iterate_mul_constant D e heD, iterate_transform D s hsD,
@@ -194,7 +194,7 @@ def twistEquiv (e : F) (he : e ≠ 0) (s : F) :
 
 theorem twistEquiv_X (e : F) (he : e ≠ 0) (s : F) (i j : ℕ) :
     twistEquiv e he s (MvPolynomial.X (i,j)) =
-      MvPolynomial.C e * ∑ ab ∈ Finset.antidiagonal j,
+      MvPolynomial.C e * ∑ ab ∈ Finset.HasAntidiagonal.antidiagonal j,
         j.choose ab.1 • (MvPolynomial.C s ^ ab.2 * MvPolynomial.X (i,ab.1)) := by
   change scale e (shear s (MvPolynomial.X (i,j))) = _
   rw [shear_X]

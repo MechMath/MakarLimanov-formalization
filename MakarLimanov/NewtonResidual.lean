@@ -123,7 +123,7 @@ theorem specialize_genericResidual (δ η : Derivation k F F) (hc : Function.Com
     · change ofSeries (specialize (evaluation (E := E) D H w) (HahnSeries.single (-(p : ℤ)) 1) _) = _
       have hsingle := specialize_single (evaluation (E := E) D H w) (-(p : ℤ))
         (1 : polynomialRange (k := k) (F := F) (E := E))
-      simpa only [map_one] using congrArg (ofSeries (hp := hp) (h := hDH)) hsingle
+      simpa only [map_one, OneMemClass.coe_one, Bool.false_eq_true, ↓reduceIte, distinguishedSymbol] using congrArg (ofSeries (hp := hp) (h := hDH)) hsingle
     · change ofSeries (specialize (evaluation (E := E) D H w)
         (genericCorrectedSymbol (k := k) z q) _) = _
       exact congrArg (ofSeries (hp := hp) (h := hDH))
@@ -150,7 +150,6 @@ theorem exists_universal_residual_coefficient (δ η : Derivation k F F)
   intro D H hDH hD hH w
   have hh := congrArg (fun U : LaurentSeries G ↦ U.coeff n)
     (specialize_genericResidual (E := E) δ η hc p hp q z D H hDH hD hH w f)
-  dsimp only at hh
   rw [specialize_coeff] at hh
   have heq : (⟨(genericResidual (E := E) δ η hc p hp q z f).coeff n,
       genericResidual_coefficients δ η hc p hp q z f n⟩ :

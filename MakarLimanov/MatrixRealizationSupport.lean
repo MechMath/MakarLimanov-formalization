@@ -44,7 +44,7 @@ lemma displacement_pow (A : Controlled P K) {a l u : ℤ}
   | zero => simpa using (displacement_one (K := K) (P := P))
   | succ n ih =>
       have h := displacement_product (A ^ n).entries A.entries ih hA
-      simpa only [pow_succ, Nat.cast_succ, add_mul, one_mul] using h
+      simpa only [pow_succ, Controlled.entries_mul, Nat.cast_succ, add_mul, one_mul] using h
 
 lemma weightedShift_displacement (e : Index P → Index P) (w : Index P → K)
     (a l u : ℤ) (h : ∀ j, w j ≠ 0 → (e j).val.1 - j.val.1 = a ∧
@@ -114,6 +114,7 @@ theorem normalMonomialMatrix_displacement (hp : 0 < p) (i j : ℕ) (r : ℤ) :
     ((wMatrix (K := F) p)^j).entries ht hw
   have h := displacement_product (((tMatrix (F := F) p)^i) * ((wMatrix p)^j)).entries
     (zMatrix (K := F) p r).entries htw (zMatrix_displacement p r)
+  simp only [normalMonomialMatrix, Controlled.entries_mul]
   convert h using 1 <;> ring
 
 /-- Fixed input and output leave only a finite window of Laurent and Taylor indices. -/

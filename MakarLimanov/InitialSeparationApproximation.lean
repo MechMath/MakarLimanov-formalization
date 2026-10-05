@@ -10,6 +10,9 @@ generic variation needed to initialize the fully proved Newton iteration.
 
 noncomputable section
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.InitialSeparationApproximation
 
 open SymbolSeries SymbolSeries.StarSeries

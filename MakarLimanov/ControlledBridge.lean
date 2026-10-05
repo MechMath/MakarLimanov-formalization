@@ -56,10 +56,10 @@ theorem controlled_pow_bound (A : Controlled P K) {R : ℤ}
     (hA : HasBound A.entries R) (n : ℕ) : HasBound (A ^ n).entries ((n : ℤ) * R) := by
   induction n with
   | zero =>
-      simpa only [pow_zero, Nat.cast_zero, zero_mul] using (scalar_bound (P := P) (1 : K))
+      simpa only [pow_zero, Controlled.entries_one, Nat.cast_zero, zero_mul] using (scalar_bound (P := P) (1 : K))
   | succ n ih =>
       have h := product_bound (A ^ n).entries A.entries ih hA
-      simpa only [pow_succ, Nat.cast_succ, add_mul, one_mul] using h
+      simpa only [pow_succ, Controlled.entries_mul, Nat.cast_succ, add_mul, one_mul] using h
 
 end MakarLimanov.ControlledMatrix
 
@@ -401,7 +401,7 @@ theorem normalMonomialMatrix_bound (i j : ℕ) (r : ℤ) :
     ((wMatrix (K := F) p) ^ j).entries ht hw
   have h := product_bound (((tMatrix (F := F) p) ^ i) * ((wMatrix p) ^ j)).entries
     (zMatrix (K := F) p r).entries htw (zMatrix_bound p r)
-  simpa only [normalMonomialMatrix, mul_zero, zero_add] using h
+  simpa only [normalMonomialMatrix, Controlled.entries_mul, mul_zero, zero_add] using h
 
 @[simp] theorem normalMonomialMatrix_zero : normalMonomialMatrix (F := F) p 0 0 0 = 1 := by
   simp [normalMonomialMatrix]

@@ -7,6 +7,9 @@ import Mathlib.Tactic
 
 /-! Finite lattice squares used in the matrix compression. -/
 
+-- Preserve definition unfolding used by these proofs across Lean versions.
+set_option backward.isDefEq.respectTransparency false
+
 namespace MakarLimanov.Lattice
 open ControlledMatrix
 

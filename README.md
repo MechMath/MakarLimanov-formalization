@@ -24,12 +24,13 @@ not need the paper's stronger explicit initial bound. The historical
 
 ## Build and verify
 
-Uses Lean `v4.30.0-rc1` and mathlib commit
-`0c154d67103f74be3a0f2c509f72ccbf5be9f2a7`.
-The current [lakefile.toml](lakefile.toml) points to a local mathlib checkout;
-update that dependency path before building on another machine.
+Uses Lean `v4.34.1` and the matching mathlib `v4.34.1` release.
+[lakefile.toml](lakefile.toml) fetches mathlib from Git;
+[lake-manifest.json](lake-manifest.json) pins the exact dependency commits.
+On a fresh checkout, download the precompiled mathlib cache before building.
 
 ```sh
+lake exe cache get
 lake build
 lake env lean FullAxiomAudit.lean
 lake env lean MainAxiomAudit.lean
@@ -39,5 +40,5 @@ lake env lean VerifyConditional.lean
 
 These checks build the library and main theorem, report the main theorem's axioms,
 and reject additional axioms in project declarations, including private helpers.
-[verification.json](verification.json) records the previous verification run and
+[verification.json](verification.json) records the latest verification run and
 source hashes. Older notes in [review/](review/) describe historical work.

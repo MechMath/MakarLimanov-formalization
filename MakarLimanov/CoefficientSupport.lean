@@ -25,15 +25,15 @@ theorem wordCoefficients_lift_coefficients (f : FreeAlgebra K σ) :
 /-- A word coefficient is unchanged except for the field embedding. -/
 theorem wordCoefficients_lift_coefficients_apply (f : FreeAlgebra K σ)
     (w : FreeMonoid σ) :
-    wordCoefficients (FreeAlgebra.lift K (FreeAlgebra.ι L) f) w =
-      algebraMap K L (wordCoefficients f w) := by
+    (wordCoefficients (FreeAlgebra.lift K (FreeAlgebra.ι L) f)).coeff w =
+      algebraMap K L ((wordCoefficients f).coeff w) := by
   rw [wordCoefficients_lift_coefficients]
   simp
 
 /-- An injective field extension preserves the exact word support. -/
 theorem support_lift_coefficients (f : FreeAlgebra K σ) :
-    (wordCoefficients (FreeAlgebra.lift K (FreeAlgebra.ι L) f)).support =
-      (wordCoefficients f).support := by
+    (wordCoefficients (FreeAlgebra.lift K (FreeAlgebra.ι L) f)).coeff.support =
+      (wordCoefficients f).coeff.support := by
   classical
   ext w
   simp only [Finsupp.mem_support_iff, wordCoefficients_lift_coefficients_apply]
